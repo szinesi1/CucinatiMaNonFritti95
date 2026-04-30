@@ -2,13 +2,11 @@
 $host = "localhost";
 $user = "root";
 $password = "";
-$dbname = "ricettario95";
+$database = "ricettario95";
 
-$conn = mysqli_connect($host, $user, $password, $dbname);
+$conn = mysqli_connect($host, $user, $password, $database);
 
 if (!$conn) {
-    die("Errore di connessione al database: " . mysqli_connect_error());
+    die("Errore connessione database: " . mysqli_connect_error());
 }
-
-mysqli_set_charset($conn, "utf8");
 ?>
