@@ -1,0 +1,168 @@
+:root {
+    --verde-scuro: #1b4332;
+    --verde: #2d6a4f;
+    --verde-medio: #40916c;
+    --verde-chiaro: #95d5b2;
+    --verde-sfondo: #f1f8f4;
+    --bianco: #ffffff;
+    --testo: #1f2933;
+    --grigio: #e5e7eb;
+    --rosso: #b00020;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: var(--verde-sfondo);
+    color: var(--testo);
+}
+
+.site-header {
+    background: linear-gradient(135deg, var(--verde-scuro), var(--verde));
+    color: var(--bianco);
+    padding: 28px 40px;
+}
+
+.site-header h1 {
+    margin: 0;
+    font-size: 36px;
+}
+
+.site-header p {
+    margin: 8px 0 0 0;
+    font-size: 16px;
+}
+
+.site-nav {
+    background-color: var(--verde);
+    padding: 14px 40px;
+    display: flex;
+    gap: 18px;
+    flex-wrap: wrap;
+}
+
+.site-nav a {
+    color: var(--bianco);
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.site-nav a:hover {
+    text-decoration: underline;
+}
+
+.layout {
+    display: grid;
+    grid-template-columns: 220px 1fr 280px;
+    gap: 20px;
+    padding: 24px 40px;
+    min-height: 70vh;
+}
+
+.sidebar,
+.content,
+.filter {
+    background-color: var(--bianco);
+    border-radius: 14px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+}
+
+.sidebar {
+    border-left: 6px solid var(--verde);
+}
+
+.content {
+    border-top: 6px solid var(--verde-medio);
+}
+
+.filter {
+    border-top: 6px solid var(--verde-chiaro);
+}
+
+h2,
+h3 {
+    color: var(--verde-scuro);
+}
+
+input,
+select,
+button {
+    width: 100%;
+    padding: 10px;
+    margin: 6px 0 14px 0;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+}
+
+button {
+    background-color: var(--verde);
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+button:hover {
+    background-color: var(--verde-scuro);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 18px;
+}
+
+th,
+td {
+    padding: 10px;
+    border: 1px solid var(--grigio);
+    text-align: left;
+}
+
+th {
+    background-color: var(--verde);
+    color: white;
+}
+
+tr:nth-child(even) {
+    background-color: #f6fbf8;
+}
+
+.messaggio-ok {
+    color: var(--verde-scuro);
+    font-weight: bold;
+}
+
+.messaggio-errore {
+    color: var(--rosso);
+    font-weight: bold;
+}
+
+.site-footer {
+    background-color: var(--verde-scuro);
+    color: var(--bianco);
+    text-align: center;
+    padding: 16px;
+    margin-top: 20px;
+}
+
+@media screen and (max-width: 900px) {
+    .layout {
+        grid-template-columns: 1fr;
+        padding: 20px;
+    }
+
+    .site-header {
+        padding: 24px 20px;
+    }
+
+    .site-nav {
+        padding: 14px 20px;
+    }
+}
