@@ -20,26 +20,41 @@ $ingredienti = $db->ingredienti->find(["numeroRicetta" => $numero]);
 
 <ul>
 <?php foreach ($ingredienti as $ing): ?>
-    <li><?= $ing['ingrediente'] ?> (<?= $ing['quantità'] ?>)</li>
+    <li>
+        <a href="../ingredienti/dettaglio.php?ricetta=<?= $ing['numeroRicetta'] ?>&numero=<?= $ing['numero'] ?>">
+            <?= $ing['ingrediente'] ?>
+        </a>
+        (<?= $ing['quantità'] ?>)
+    </li>
 <?php endforeach; ?>
 </ul>
 
 <h2>Regione</h2>
 
 <?php
-$regRel = $db->ricettaRegionale->findOne(["ricetta" => $numero]);
+// Trovo la riga in ricettaRegionale
+$regioneRicetta = $db->ricettaRegionale->findOne([
+    "numeroRicetta" => $numero
+]);
+
+if ($regioneRicetta) {
+    // Recupero la regione tramite il COD
+    $regione = $db->regioni->findOne([
+        "cod" => $regioneRicetta['cod']
+    ]);
+}
 ?>
 
-<?php if ($regRel): ?>
-    <?php $regione = $db->regioni->findOne(["cod" => $regRel['regione']]); ?>
+<?php if (isset($regione)): ?>
     <p>
-        <a href="../regioni/dettaglio.php?cod=<?= $regione['cod'] ?>">
+        <a href="../regioni/dettaglio.php?regione=<?= $regione['cod'] ?>">
             <?= $regione['nome'] ?>
         </a>
     </p>
 <?php else: ?>
     <p><em>Nessuna regione associata</em></p>
 <?php endif; ?>
+
 
 <h2>Pubblicata in</h2>
 
