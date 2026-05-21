@@ -1,18 +1,65 @@
+/*****************************************/
+/*************** PALETTE COLORI **********/
+/*****************************************/
+
+:root {
+    /* Colori generali */
+    --colore-bg: #fafafa;
+    --colore-testo: #000000;
+
+    /* Header */
+    --colore-header-bg: #222222;
+    --colore-header-text: #ffffff;
+
+    /* Sidebar */
+    --colore-sidebar-bg: #333333;
+    --colore-sidebar-hover: #444444;
+    --colore-sidebar-active-border: #ffd700;
+    --colore-sidebar-text: #ffffff;
+
+    /* Contenuto */
+    --colore-content-bg: #f5f5f5;
+
+    /* Footer */
+    --colore-footer-bg: #dddddd;
+    --colore-footer-border: #bbbbbb;
+
+    /* Card */
+    --colore-card-bg: #ffffff;
+    --colore-card-shadow: rgba(0,0,0,0.1);
+
+    /* Bottoni */
+    --colore-btn-bg: #333333;
+    --colore-btn-hover: #555555;
+    --colore-btn-text: #ffffff;
+
+    /* Carosello */
+    --colore-carousel-btn-bg: rgba(0,0,0,0.4);
+    --colore-carousel-btn-hover: rgba(0,0,0,0.7);
+}
+
+/*****************************************/
+/**************** GENERALE ***************/
+/*****************************************/
+
 body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background: #fafafa;
+    background: var(--colore-bg);
+    color: var(--colore-testo);
 }
+
 /* Layout generale */
 .layout {
     display: flex;
     min-height: calc(100vh - 60px);
 }
+
 /* Header */
 .top-header {
-    background: #222;
-    color: white;
+    background: var(--colore-header-bg);
+    color: var(--colore-header-text);
     padding: 20px;
     text-align: center;
     font-size: 24px;
@@ -22,9 +69,9 @@ body {
 /* Sidebar */
 .sidebar {
     width: 220px;
-    background: #333;
+    background: var(--colore-sidebar-bg);
     padding: 20px 0;
-    color: white;
+    color: var(--colore-sidebar-text);
 }
 
 /* Navbar verticale */
@@ -39,7 +86,7 @@ body {
 }
 
 .nav-vertical a {
-    color: white;
+    color: var(--colore-sidebar-text);
     text-decoration: none;
     font-size: 18px;
     padding: 10px 20px;
@@ -47,27 +94,27 @@ body {
 }
 
 .nav-vertical a.active {
-    background: #555;
-    border-left: 4px solid #ffd700;
+    background: var(--colore-sidebar-hover);
+    border-left: 4px solid var(--colore-sidebar-active-border);
 }
 
 .nav-vertical a:hover {
-    background: #444;
+    background: var(--colore-sidebar-hover);
 }
 
 /* Contenuto principale */
 .content {
     flex: 1;
     padding: 30px;
-    background: #f5f5f5;
+    background: var(--colore-content-bg);
 }
 
 /* Footer */
 .footer {
-    background: #ddd;
+    background: var(--colore-footer-bg);
     padding: 15px;
     text-align: center;
-    border-top: 1px solid #bbb;
+    border-top: 1px solid var(--colore-footer-border);
 }
 
 /*****************************************/
@@ -97,8 +144,8 @@ body {
 .btn {
     display: inline-block;
     padding: 12px 20px;
-    background-color: #333;
-    color: white;
+    background-color: var(--colore-btn-bg);
+    color: var(--colore-btn-text);
     text-decoration: none;
     border-radius: 6px;
     font-weight: bold;
@@ -106,5 +153,159 @@ body {
 }
 
 .btn:hover {
-    background-color: #555;
+    background-color: var(--colore-btn-hover);
+}
+
+/*********************************************************/
+/******* PAGINE PER ELENCHI DI ENTITA' *******************/
+/*********************************************************/
+
+/*****************************************/
+/**************** RICETTE ****************/
+/*****************************************/
+
+/* Griglia delle card */
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+/* Card */
+.card {
+    background: var(--colore-card-bg);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 6px var(--colore-card-shadow);
+    display: flex;
+    flex-direction: column;
+}
+
+/* Immagine */
+.card img {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+}
+
+/* Corpo card */
+.card-body {
+    padding: 15px;
+    flex: 1;
+}
+
+/* Titolo */
+.card-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+/* Bottone */
+.card-button {
+    display: inline-block;
+    padding: 10px 15px;
+    background: var(--colore-btn-bg);
+    color: var(--colore-btn-text);
+    text-decoration: none;
+    border-radius: 6px;
+    margin-top: 10px;
+}
+
+.card-button:hover {
+    background: var(--colore-btn-hover);
+}
+
+/*********************************************************/
+/******* PAGINE PER ENTITA' SINGOLE **********************/
+/*********************************************************/
+
+/* Pulsante torna indietro (in alto) */
+.btn-back {
+    display: inline-block;
+    margin-bottom: 20px;
+    padding: 8px 14px;
+    background: var(--colore-btn-bg);
+    color: var(--colore-btn-text);
+    text-decoration: none;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.btn-back:hover {
+    background: var(--colore-btn-hover);
+}
+
+/* Pulsante torna alla categoria (in basso) */
+.btn-category {
+    display: inline-block;
+    margin-top: 40px;
+    padding: 10px 16px;
+    background: var(--colore-sidebar-bg);
+    color: var(--colore-sidebar-text);
+    text-decoration: none;
+    border-radius: 6px;
+    font-size: 16px;
+}
+
+.btn-category:hover {
+    background: var(--colore-sidebar-hover);
+}
+
+/*****************************************/
+/************ RICETTA SINGOLA ************/
+/*****************************************/
+
+/*************/
+/* Carosello */
+/*************/
+.carousel {
+    position: relative;
+    width: 600px;
+    max-width: 100%;
+    margin: 20px auto;
+    overflow: hidden;
+    border-radius: 10px;
+}
+
+.carousel-inner {
+    display: flex;
+    transition: transform 0.5s ease;
+}
+
+.carousel-item {
+    min-width: 100%;
+}
+
+.carousel-item img {
+    width: 100%;
+    height: 350px;
+    object-fit: cover;
+}
+
+/* Bottoni carosello */
+.carousel-control {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--colore-carousel-btn-bg);
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    font-size: 24px;
+    border-radius: 50%;
+}
+
+.carousel-control.prev {
+    left: 10px;
+}
+
+.carousel-control.next {
+    right: 10px;
+}
+
+.carousel-control:hover {
+    background: var(--colore-carousel-btn-hover);
 }
