@@ -10,8 +10,8 @@ L’applicazione permette di consultare, ricercare e gestire ricette, ingredient
 ```
 /css/          → fogli di stile (palette verde)
 /js/           → script JavaScript
-/php/          → connessione al DB e funzioni comuni
-/ricerca/      → pagine di ricerca (Ricette, Regioni, Libri, Pagine, Ingredienti)
+/interface/          → connessione al DB e funzioni comuni
+/entity/      → pagine di ricerca (Ricette, Regioni, Libri, Pagine, Ingredienti)
 /crud/         → CRUD completo per la tabella Ingrediente
 /img/          → immagini (se presenti)
 index.php      → homepage con template Interfaccia 3
@@ -70,12 +70,12 @@ La palette scelta è basata su tonalità di verde.
 
 ## 🛠️ Tecnologie utilizzate
 
-- **PHP 8+**  
-- **MySQL / MariaDB**  
-- **HTML5**  
-- **CSS3**  
-- **JavaScript**  
-- **GitHub** per versionamento  
+- **PHP 8+** per la logica server-side
+- **MongoDB** come database NoSQL
+- **HTML5** per la struttura delle pagine
+- **CSS3** per lo stile e il layout
+- **JavaScript** per interattivita' (es. carosello immagini)
+- **GitHub** per versionamento
 
 ---
 
