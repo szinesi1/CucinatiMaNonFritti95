@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html lang="it">
+<base href="/CucinatiMaNonFritti95/v0/">
+
 <head>
     <meta charset="UTF-8">
     <title>Cucinati Ma Non Fritti 95</title>
-    <link rel="stylesheet" href="/CucinatiMaNonFritti95/v0/css/style.css">
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 <header class="top-header">

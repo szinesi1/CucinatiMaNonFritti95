@@ -83,14 +83,14 @@ La palette scelta è basata su tonalità di verde.
 
 1. Clonare il repository:
 ```
-git clone https://github.com/tuo-username/nome-progetto.git
+git clone https://github.com/szinesi1/CucinatiMaNonFritti95
 ```
 2. Importare il database tramite `schema.sql` e `dati.sql` (se fornito).  
 3. Configurare `php/connessione.php` con le proprie credenziali MySQL.  
 4. Avviare il server locale (XAMPP, WAMP, ecc.).  
 5. Aprire nel browser:
 ```
-http://localhost/nome-progetto/
+http://localhost/CucinatiMaNonFritti95/
 ```
 
 ---
