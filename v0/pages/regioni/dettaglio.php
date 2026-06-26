@@ -29,9 +29,9 @@ $backUrl = $_SERVER['HTTP_REFERER'] ?? 'pages/regioni/index.php';
     ← Torna indietro
 </a>
 
-<h1><?= htmlspecialchars($regione['nome']) ?></h1>
+<h2><?= htmlspecialchars($regione['nome']) ?></h2>
 
-<h2>Ricette della regione</h2>
+<h3>Ricette della regione</h3>
 
 <?php
 $ricetteTipiche = $db->ricettaRegionale->find([

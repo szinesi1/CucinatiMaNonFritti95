@@ -30,7 +30,7 @@ if ($from === 'regione' && isset($_GET['cod'])) {
     <a href="<?= $backUrl ?>" class="btn-back">← Torna indietro</a>
 <?php endif; ?>
 
-<h1><?= $ricetta['titolo'] ?></h1>
+<h2><?= $ricetta['titolo'] ?></h2>
 
 <?php
 $immagini = isset($ricetta['immagini']) && is_array($ricetta['immagini']) ? $ricetta['immagini'] : [];
@@ -55,7 +55,7 @@ $immagini = isset($ricetta['immagini']) && is_array($ricetta['immagini']) ? $ric
 
 <p><strong>Tipo:</strong> <?= $ricetta['tipo'] ?></p>
 
-<h2>Ingredienti</h2>
+<h3>Ingredienti</h3>
 
 <?php
 $ingredienti = $db->ingredienti->find(["numeroRicetta" => $numero]);
@@ -98,7 +98,7 @@ $ingredienti = $db->ingredienti->find(["numeroRicetta" => $numero]);
     </a>
 </p>
 
-<h2>Regione</h2>
+<h3>Regione</h3>
 
 <?php
 $regioneRicetta = $db->ricettaRegionale->findOne(["numeroRicetta" => $numero]);
@@ -119,7 +119,7 @@ if ($regioneRicetta) {
 <?php endif; ?>
 
 
-<h2>Pubblicata in</h2>
+<h3>Pubblicata in</h3>
 
 <?php
 $pubblicazioni = $db->ricettaPubblicata->find(["numeroRicetta" => $numero]);

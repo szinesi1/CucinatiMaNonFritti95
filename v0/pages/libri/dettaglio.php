@@ -52,14 +52,14 @@ if ($from === 'ricetta' && isset($_GET['numero'])) {
     ← Torna indietro
 </a>
 
-<h1><?= htmlspecialchars($libro['titolo']) ?></h1>
+<h2><?= htmlspecialchars($libro['titolo']) ?></h2>
 
 <p>
     <strong>Anno:</strong>
     <?= htmlspecialchars($libro['anno']) ?>
 </p>
 
-<h2>Ricette presenti nel libro</h2>
+<h3>Ricette presenti nel libro</h3>
 
 <?php
 $pubblicazioni = $db->ricettaPubblicata->find(

@@ -1,0 +1,184 @@
+/*****************************************/
+/**************** BOTTONI ****************/
+/*****************************************/
+
+/************* BOTTONE GENERICO **********/
+
+.btn {
+    display: inline-block;
+    padding: 12px 20px;
+    background: var(--colore-btn-bg);
+    color: var(--colore-btn-text);
+    text-decoration: none;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all .2s ease;
+}
+
+.btn:hover {
+    background: var(--colore-btn-hover);
+    transform: translateY(-2px);
+}
+
+/*****************************************/
+/************ PIÙ/MENO FILTRI ************/
+/*****************************************/
+
+.secondary-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    align-self: flex-start;
+    height: 46px;
+    min-width: 130px;
+    padding: 0 18px;
+    background: var(--colore-accent-soft);
+    color: var(--colore-testo);
+    border: none;
+    border-radius: 10px;
+    white-space: nowrap;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all .2s ease;
+}
+
+.secondary-button:hover {
+    background: var(--colore-accent-yellow);
+    transform: translateY(-2px);
+}
+
+/*****************************************/
+/************** FILTRA *******************/
+/*****************************************/
+
+.filters button[type="submit"] {
+    background: var(--colore-header-bg);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 22px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all .2s ease;
+}
+
+.filters button[type="submit"]:hover {
+    filter: brightness(.9);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,.18);
+}
+
+/*****************************************/
+/*************** RESET *******************/
+/*****************************************/
+
+.reset-button {
+    display: inline-block;
+    background: var(--colore-accent-arancio);
+    color: white;
+    text-decoration: none;
+    border-radius: 10px;
+    padding: 10px 22px;
+    font-weight: bold;
+    transition: all .2s ease;
+}
+
+.reset-button:hover {
+    filter: brightness(.9);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,.18);
+}
+
+/*****************************************/
+/************** CARD BUTTON **************/
+/*****************************************/
+
+.card-button {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 10px 15px;
+    background: var(--colore-btn-bg);
+    color: var(--colore-btn-text);
+    text-decoration: none;
+    border-radius: 6px;
+    transition: all .2s ease;
+}
+
+.card-button:hover {
+    background: var(--colore-btn-hover);
+    transform: translateY(-2px);
+}
+
+/*****************************************/
+/************** TORNA INDIETRO ***********/
+/*****************************************/
+
+.btn-back {
+    display: inline-block;
+    margin-bottom: 20px;
+    padding: 8px 14px;
+    background: var(--colore-btn-bg);
+    color: var(--colore-btn-text);
+    text-decoration: none;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: all .2s ease;
+}
+
+.btn-back:hover {
+    background: var(--colore-btn-hover);
+    transform: translateY(-2px);
+}
+
+/*****************************************/
+/*********** TORNA CATEGORIA *************/
+/*****************************************/
+
+.btn-category {
+    display: inline-block;
+    margin-top: 40px;
+    padding: 10px 16px;
+    background: var(--colore-sidebar-bg);
+    color: var(--colore-sidebar-text);
+    text-decoration: none;
+    border-radius: 6px;
+    transition: all .2s ease;
+}
+
+.btn-category:hover {
+    background: var(--colore-sidebar-hover);
+    transform: translateY(-2px);
+}
+
+/*****************************************/
+/************* CAROSELLO *****************/
+/*****************************************/
+
+.carousel-control {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--colore-carousel-btn-bg);
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 24px;
+    transition: all .2s ease;
+}
+
+.carousel-control.prev {
+    left: 10px;
+}
+
+.carousel-control.next {
+    right: 10px;
+}
+
+.carousel-control:hover {
+    background: var(--colore-carousel-btn-hover);
+}

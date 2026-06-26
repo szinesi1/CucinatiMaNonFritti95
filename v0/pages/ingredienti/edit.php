@@ -43,7 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 ?>
 
-<h1>Modifica ingrediente</h1>
+<h2>Modifica ingrediente</h2>
 
 <form method="post">
 

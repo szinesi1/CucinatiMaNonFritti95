@@ -26,9 +26,9 @@ if ($from === 'ricetta' && $numeroRicetta) {
     ← Torna indietro
 </a>
 
-<h1><?= htmlspecialchars($nomeIngrediente) ?></h1>
+<h2><?= htmlspecialchars($nomeIngrediente) ?></h2>
 
-<h2>Ricette che usano questo ingrediente</h2>
+<h3>Ricette che usano questo ingrediente</h3>
 
 <?php
 $utilizzi = $db->ingredienti->find([

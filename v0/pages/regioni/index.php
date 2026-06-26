@@ -7,7 +7,7 @@ $regioni = $db->regioni->find([], [
 ]);
 ?>
 
-<h1>Elenco Regioni</h1>
+<h2>Elenco Regioni</h2>
 
 <table>
     <tr>

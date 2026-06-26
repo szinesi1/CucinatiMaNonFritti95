@@ -8,7 +8,7 @@ $libri = $db->libri->find([], [
 ]);
 ?>
 
-<h1>Elenco Libri</h1>
+<h2>Elenco Libri</h2>
 
 <table>
     <tr>

@@ -169,7 +169,7 @@ $showFilters =
             Filtra
         </button>
 
-        <a href="index.php" class="reset-button">
+        <a href="/CucinatiMaNonFritti95/v0/pages/ricette/index.php" class="reset-button">
             Reset
         </a>
 
@@ -200,7 +200,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 </script>
 
-<h1>Ricette per tipologia</h1>
+<h2>Ricette per tipologia</h2>
 
 <!-- =========================
      LISTA RICETTE
@@ -208,7 +208,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 <?php foreach ($tipi as $tipo => $titolo): ?>
 
-    <h2 class="mt-4"><?= htmlspecialchars($titolo) ?></h2>
+    <h3 class="mt-4"><?= htmlspecialchars($titolo) ?></h3>
 
     <?php
     $tipoQuery = $baseQuery;

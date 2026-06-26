@@ -2,7 +2,7 @@
 include __DIR__ . '/interface/header.php';
 ?>
 
-<h1 class="page-title">Benvenuta in Cucinati Ma Non Fritti 95</h1>
+<h2 class="page-title">Benvenuta in Cucinati Ma Non Fritti 95</h2>
 
 <p class="page-description">
     Progetto universitario dedicato alla cucina italiana regionale.  

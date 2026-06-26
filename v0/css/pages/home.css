@@ -1,0 +1,36 @@
+/*****************************************/
+/**************** HOME *******************/
+/*****************************************/
+
+/* Contenitore principale */
+
+.home-container {
+    text-align: center;
+    margin-top: 40px;
+}
+
+/* Titolo home */
+
+.home-container h1 {
+    margin-bottom: 1rem;
+    color: var(--colore-header-bg);
+}
+
+/* Descrizione */
+
+.home-description {
+    max-width: 600px;
+    margin: 20px auto;
+    font-size: 18px;
+    line-height: 1.6;
+}
+
+/* Contenitore dei pulsanti */
+
+.home-buttons {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-top: 30px;
+}

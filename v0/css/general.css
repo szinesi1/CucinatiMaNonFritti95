@@ -1,0 +1,74 @@
+/*****************************************/
+/*************** GENERALE ****************/
+/*****************************************/
+
+/* Body */
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: var(--colore-bg);
+    color: var(--colore-testo);
+}
+
+/* Titoli */
+
+h1 {
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+    color: var(--colore-header-text);
+    font-size: 3rem;
+}
+
+h2 {
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    color: var(--colore-header-bg);
+    font-size: 2rem;
+}
+
+h3 {
+    color: var(--colore-header-bg);
+    font-size: 1.5rem;
+}
+
+/* Paragrafi */
+
+p {
+    line-height: 1.6;
+}
+
+/* Link */
+
+a {
+    color: inherit;
+}
+
+/* Immagini */
+
+img {
+    max-width: 100%;
+    display: block;
+}
+
+/* Liste */
+
+ul,
+ol {
+    padding-left: 1.5rem;
+}
+
+li {
+    margin-bottom: .4rem;
+}
+
+/* Utility */
+
+.mt-4 {
+    margin-top: 2rem;
+}
+
+.text-center {
+    text-align: center;
+}

@@ -1,0 +1,15 @@
+/*****************************************/
+/**************** RICETTE ****************/
+/*****************************************/
+
+/* Titoli delle sezioni */
+
+h2.mt-4 {
+    margin-bottom: 1rem;
+}
+
+/* Spazio tra una categoria e la successiva */
+
+.card-grid + h2 {
+    margin-top: 3rem;
+}
