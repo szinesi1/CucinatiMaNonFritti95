@@ -1,5 +1,6 @@
 <?php
-require __DIR__ . '/libri.php';
+
+$libriData = require __DIR__ . '/libri.php';
 
 $pagineData = [];
 foreach ($libriData as $libro) {
@@ -11,3 +12,5 @@ foreach ($libriData as $libro) {
         ];
     }
 }
+
+return $pagineData;

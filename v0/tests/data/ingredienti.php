@@ -1,6 +1,6 @@
 <?php
 
-$ingredientiData = [
+return [
 
     // 1 - Spaghetti alla chitarra (Abruzzo)
     [ "numeroRicetta" => 1, "numero" => 1, "ingrediente" => "Spaghetti alla chitarra", "quantità" => "80g" ],

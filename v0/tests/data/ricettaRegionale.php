@@ -1,6 +1,6 @@
 <?php
 
-$ricettaRegionaleData = [
+return [
     ["cod" => "ABR", "numeroRicetta" => 1],
     ["cod" => "BAS", "numeroRicetta" => 2],
     ["cod" => "CAL", "numeroRicetta" => 3],

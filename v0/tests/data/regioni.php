@@ -1,6 +1,6 @@
 <?php
 
-$regioniData = [
+return [
     ["cod" => "ABR", "nome" => "Abruzzo"],
     ["cod" => "BAS", "nome" => "Basilicata"],
     ["cod" => "CAL", "nome" => "Calabria"],

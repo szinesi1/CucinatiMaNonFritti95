@@ -1,6 +1,6 @@
 <?php
 
-$ricetteData = [
+return [
     [
         "numero" => 1,
         "titolo" => "Spaghetti alla chitarra",
