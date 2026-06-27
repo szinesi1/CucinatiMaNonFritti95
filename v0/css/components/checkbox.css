@@ -1,0 +1,78 @@
+.check-card {
+    display: block;
+    cursor: pointer;
+    margin: 15px 0;
+    user-select: none;
+}
+
+.check-card input {
+    display: none;
+}
+
+.check-ui {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+
+    padding: 12px 14px;
+    border-radius: 12px;
+
+    background: var(--off-white);
+    border: 1px solid var(--grey-light);
+
+    transition: .2s ease;
+}
+
+.check-card:hover .check-ui {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px var(--grey-shadow);
+}
+
+.check-box {
+    width: 20px;
+    height: 20px;
+    border-radius: 6px;
+
+    border: 2px solid var(--sky-blue);
+    background: white;
+
+    position: relative;
+    flex-shrink: 0;
+}
+
+.check-box::after {
+    content: "";
+    position: absolute;
+
+    width: 6px;
+    height: 10px;
+
+    border: solid white;
+    border-width: 0 2px 2px 0;
+
+    top: 2px;
+    left: 6px;
+
+    transform: rotate(45deg);
+    opacity: 0;
+}
+
+.check-card input:checked + .check-ui .check-box {
+    background: var(--sky-blue);
+    border-color: var(--sky-blue-dark);
+}
+
+.check-card input:checked + .check-ui .check-box::after {
+    opacity: 1;
+}
+
+.check-text strong {
+    display: block;
+    font-size: 0.95rem;
+    color: var(--brown);
+}
+
+.check-text span {
+    font-size: 0.85rem;
+    color: #666;
+}

@@ -6,8 +6,12 @@
 @import url("components/buttons.css");
 @import url("components/cards.css");
 @import url("components/filters.css");
+@import url("components/checkbox.css");
 
 @import url("pages/home.css");
 @import url("pages/ricette.css");
 @import url("pages/ingredienti.css");
 @import url("pages/dettaglio.css");
+@import url("pages/regioni.css");
+@import url("pages/libri.css");
+@import url("pages/crud.css");

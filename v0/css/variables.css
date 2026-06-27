@@ -1,45 +1,90 @@
-
 :root {
-    /* BASE THEME */
+    /*************** COLORI ******************/
 
-    --colore-bg: #EDE383; /* sfondo principale caldo */
-    --colore-testo: #351903; /* testo principale leggibile */
+    /* Palette principale */
+    --spring-green: #017632;
+    --yellow-green: #ABE145;
+    --sky-blue: #07C1F2;
+    --sky-blue-dark: #0596C7;
+    --cosmic-latte: #FFF4E0;
 
-    /* Identità visiva */
-    --colore-header-bg: #017632; /* Spring Green */
-    --colore-header-text: #FFF4E0; /* Cosmic Latte */
+    --orange: #F67A22;
+    --orange-dark: #D97706;
 
-    --colore-sidebar-bg: #ABE145; /* Yellow Green */
-    --colore-sidebar-text: #2F1B0C; /* marrone scuro coerente */
+    --yellow: #FFE63A;
+    --yellow-soft: #FBE248;
 
-    /* Accent */
-    --colore-accent-blu: #07C1F2;     /* interazioni / link / hover moderni */
-    --colore-accent-arancio: #F67A22; /* warning / attivo / evidenza */
-    --colore-accent-yellow: #FFE63A;  /* highlight forte */
-    --colore-accent-soft: #FBE248;    /* highlight leggero */
+    --brown: #351903;
+    --brown-light: #5B3A1A;
 
-    /* Sidebar interazioni */
-    --colore-sidebar-hover: #FBE248; /* soft highlight */
-    --colore-sidebar-active-border: #F67A22;
+    --white: #FFFFFF;
+    --off-white: #FFFDF5;
 
-    /* Contenuto */
-    --colore-content-bg: #FFFDF5; /* neutro caldo */
+    --grey-light: #E8E8E8;
+    --grey-shadow: rgba(53, 25, 3, 0.15);
 
-    /* Footer */
-    --colore-footer-bg: #017632; /* coerente con header */
-    --colore-footer-border: #F67A22;
+    /*************** TEMA ********************/
 
-    /* Card */
-    --colore-card-bg: #ffffff;
-    --colore-card-shadow: rgba(53, 25, 3, 0.15);
+    /* Sfondo */
+    --colore-bg: #EDE383;
+    --colore-content-bg: var(--off-white);
 
-    /* Bottoni */
-    --colore-btn-bg: #07C1F2;        /* sky blue */
-    --colore-btn-hover: #0596C7;     /* versione più scura per hover */
-    --colore-btn-text: #000000;
-    --colore-btn-shadow: rgba(7, 193, 242, 0.25);
+    /* Testo */
+    --colore-testo: var(--brown);
 
-    /* Carosello */
-    --colore-carousel-btn-bg: rgba(246, 122, 34, 0.5);
-    --colore-carousel-btn-hover: rgba(7, 193, 242, 0.7);
+    /*************** HEADER ******************/
+
+    --colore-header-bg: var(--spring-green);
+    --colore-header-text: var(--cosmic-latte);
+
+    /*************** SIDEBAR *****************/
+
+    --colore-sidebar-bg: var(--yellow-green);
+    --colore-sidebar-text: var(--brown);
+
+    --colore-sidebar-hover: var(--yellow-soft);
+    --colore-sidebar-active-border: var(--orange);
+
+    /*************** ACCENT ******************/
+
+    --colore-accent-blu: var(--sky-blue);
+    --colore-accent-arancio: var(--orange);
+    --colore-accent-yellow: var(--yellow);
+    --colore-accent-soft: var(--yellow-soft);
+
+    /*************** CARD ********************/
+
+    --colore-card-bg: var(--white);
+    --colore-card-shadow: var(--grey-shadow);
+
+    /*************** BOTTONI *****************/
+
+    /* Pulsanti generici */
+    --colore-btn-bg: var(--sky-blue);
+    --colore-btn-hover: var(--sky-blue-dark);
+    --colore-btn-text: var(--brown);
+    --colore-btn-shadow: rgba(7,193,242,.25);
+
+    /* Pulsanti CRUD */
+    --btn-add: var(--spring-green);
+    --btn-add-light: #6EDB91;
+
+    --btn-edit: var(--sky-blue);
+    --btn-edit-light: #8EDCF7;
+
+    --btn-delete: var(--orange);
+    --btn-delete-dark: var(--orange-dark);
+
+    --btn-save: var(--spring-green);
+
+    /*************** FOOTER ******************/
+
+    --colore-footer-bg: var(--spring-green);
+    --colore-footer-border: var(--yellow-green);
+
+    /*************** CAROUSEL ****************/
+
+    --colore-carousel-btn-bg: rgba(246,122,34,.5);
+    --colore-carousel-btn-hover: rgba(7,193,242,.7);
+
 }

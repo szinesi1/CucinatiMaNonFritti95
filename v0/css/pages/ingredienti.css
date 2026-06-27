@@ -4,16 +4,16 @@
 
 /* Titoli alfabetici */
 
-.lettera-titolo {
-    margin-top: 2rem;
-    margin-bottom: 1rem;
-    padding-bottom: .5rem;
-
-    border-bottom: 3px solid var(--colore-accent-blu);
-
-    color: var(--colore-header-bg);
+.lettera-titolo{
+    display: inline-block;
+    padding: 6px 14px;
+    background: var(--yellow-soft);
+    border-bottom: none;
+    border-left: 5px solid var(--sky-blue);
+    border-radius: 8px;
+    color: var(--spring-green);
+    font-weight: bold;
 }
-
 /* Contenitore elenco */
 
 .ingredienti-container {
@@ -26,16 +26,14 @@
 
 .ingrediente-info {
     margin: .4rem 0;
-
     font-size: .95rem;
-
-    color: #666;
+    color: var(--brown-light);
 }
 
 /* Conteggio ricette */
 
 .ingrediente-conteggio {
     margin: 1rem 0;
-
     font-size: .95rem;
+    color: var(--brown);
 }

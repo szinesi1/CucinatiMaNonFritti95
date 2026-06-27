@@ -5,21 +5,48 @@
 /************* BOTTONE GENERICO **********/
 
 .btn {
-    display: inline-block;
-    padding: 12px 20px;
-    background: var(--colore-btn-bg);
-    color: var(--colore-btn-text);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border-radius: 8px;
     text-decoration: none;
-    border: none;
-    border-radius: 6px;
-    font-weight: bold;
+    font-weight: 600;
+    font-size: .95rem;
     cursor: pointer;
-    transition: all .2s ease;
+    transition:
+        background-color .2s ease,
+        color .2s ease,
+        transform .2s ease,
+        box-shadow .2s ease;
 }
 
 .btn:hover {
-    background: var(--colore-btn-hover);
     transform: translateY(-2px);
+    box-shadow: 0 2px 6px rgba(0,0,0,.15);
+}
+
+.btn-home {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 22px;
+    border-radius: 10px;
+    font-weight: bold;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all .2s ease;
+
+    background: var(--sky-blue);
+    border: 1px solid var(--sky-blue-dark);
+    color: var(--white);
+}
+
+.btn-home:hover {
+    background: var(--sky-blue-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,.18);
 }
 
 /*****************************************/
@@ -76,18 +103,22 @@
 /*****************************************/
 
 .reset-button {
-    display: inline-block;
-    background: var(--colore-accent-arancio);
-    color: white;
-    text-decoration: none;
-    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     padding: 10px 22px;
+    border-radius: 10px;
     font-weight: bold;
+    text-decoration: none;
+    cursor: pointer;
     transition: all .2s ease;
+    background: var(--btn-delete) !important;
+    border: 1px solid var(--btn-delete-dark);
+    color: var(--white);
 }
 
 .reset-button:hover {
-    filter: brightness(.9);
+    background: var(--btn-delete-dark) !important;
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(0,0,0,.18);
 }
@@ -181,4 +212,75 @@
 
 .carousel-control:hover {
     background: var(--colore-carousel-btn-hover);
+}
+
+/*****************************************/
+/************** BOTTONI CRUD **************/
+/*****************************************/
+
+/*************** MODIFICA *****************/
+
+.btn-edit{
+    background: var(--btn-edit-light);
+    border: 1px solid var(--btn-edit);
+    color: var(--brown);
+}
+
+.btn-edit:hover{
+    background: var(--btn-edit);
+    color: var(--white);
+}
+
+/**************** AGGIUNGI ****************/
+
+.btn-add{
+    background: var(--btn-add-light);
+    border: 1px solid var(--btn-add);
+    color: var(--brown);
+}
+
+.btn-add:hover{
+    background: var(--btn-add);
+    color: var(--white);
+}
+
+/**************** ELIMINA *****************/
+
+.btn-delete{
+    background: var(--btn-delete);
+    border: 1px solid var(--btn-delete-dark);
+    color: var(--white);
+}
+
+.btn-delete:hover{
+    background: var(--btn-delete-dark);
+}
+
+/*** FORZA DIMENSIONI in crud.css ***/
+
+.btn-save {
+    background: var(--btn-save);
+    border: 1px solid var(--btn-save);
+    color: var(--white);
+}
+
+.btn-undo {
+    background: var(--btn-delete);
+    border: 1px solid var(--btn-delete-dark);
+    color: var(--white);
+}
+
+/*****************************************/
+/************* AZIONI CRUD ***************/
+/*****************************************/
+
+.ingredient-actions{
+    display:flex;
+    align-items:center;
+    justify-content:flex-end;
+    gap:10px;
+}
+
+.divider{
+    display:none;
 }

@@ -2,46 +2,94 @@
 require __DIR__ . '/../../includes/db_connect.php';
 include __DIR__ . '/../../interface/header.php';
 
+/* =========================
+   RECUPERO RICETTA
+========================= */
+
+$numeroRicetta = isset($_GET['numero'])
+    ? (int) $_GET['numero']
+    : (int) ($_POST['numeroRicetta'] ?? 0);
+
+$ricetta = $db->ricette->findOne([
+    'numero' => $numeroRicetta
+]);
+
+if (!$ricetta) {
+    echo "<p>Ricetta non trovata.</p>";
+    include __DIR__ . '/../../interface/footer.php';
+    exit;
+}
+
+/* =========================
+   SALVATAGGIO
+========================= */
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $ingrediente = trim($_POST['ingrediente'] ?? '');
-    $numeroRicetta = (int) ($_POST['numeroRicetta'] ?? 0);
     $quantita = trim($_POST['quantita'] ?? '');
 
-    if ($ingrediente && $numeroRicetta && $quantita) {
+    if ($ingrediente !== '' && $quantita !== '') {
 
         $db->ingredienti->insertOne([
-            'ingrediente' => $ingrediente,
-            'numeroRicetta' => $numeroRicetta,
-            'quantità' => $quantita
+            'ingrediente'    => $ingrediente,
+            'numeroRicetta'  => $numeroRicetta,
+            'quantità'       => $quantita
         ]);
 
-        header("Location: dettaglio.php?ingrediente=" . urlencode($ingrediente));
+        header("Location: ../ricette/dettaglio.php?numero=" . $numeroRicetta);
         exit;
     }
 }
 ?>
 
-<h1>Nuovo ingrediente</h1>
+<h2>
+    Nuovo ingrediente per la ricetta:
+    <?= htmlspecialchars($ricetta['titolo']) ?>
+</h2>
 
 <form method="post">
 
+    <input
+        type="hidden"
+        name="numeroRicetta"
+        value="<?= $numeroRicetta ?>">
+
     <p>
-        Nome ingrediente<br>
-        <input type="text" name="ingrediente" required>
+        <label for="ingrediente">Nome ingrediente</label><br>
+
+        <input
+            type="text"
+            id="ingrediente"
+            name="ingrediente"
+            class="text-input"
+            required>
     </p>
 
     <p>
-        Numero ricetta<br>
-        <input type="number" name="numeroRicetta" required>
+        <label for="quantita">Quantità</label><br>
+
+        <input
+            type="text"
+            id="quantita"
+            class="text-input"
+            name="quantita"
+            required>
     </p>
 
-    <p>
-        Quantità<br>
-        <input type="text" name="quantita" required>
-    </p>
+    <div class="form-actions">
 
-    <button type="submit">Salva</button>
+        <a
+            href="/CucinatiMaNonFritti95/v0/pages/ricette/dettaglio.php?numero=<?= $numeroRicetta ?>"
+            class="btn btn-undo">
+            Annulla
+        </a>
+
+        <button type="submit" class="btn btn-save">
+            Salva
+        </button>
+
+    </div>
 
 </form>
 

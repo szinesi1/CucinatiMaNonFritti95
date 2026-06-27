@@ -13,5 +13,7 @@ $db->ingredienti->deleteOne([
     'numeroRicetta' => $numeroRicetta
 ]);
 
-header("Location: index.php");
+header("Location: ../ricette/dettaglio.php?numero=" . $numeroRicetta);
 exit;
+
+/* chiamata di sistema per la conferma, non serve altro */

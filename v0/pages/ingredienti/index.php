@@ -135,15 +135,14 @@ $ingredienti = $db->ingredienti->aggregate($pipeline);
         <input
             type="text"
             name="search"
+            class="filters-input"
             placeholder="Cerca ingrediente..."
-            value="<?= htmlspecialchars($search) ?>"
-        >
+            value="<?= htmlspecialchars($search) ?>">
 
         <button
             type="button"
             id="toggleFilters"
-            class="secondary-button"
-        >
+            class="secondary-button">
             <?= $showFilters ? 'Meno filtri' : 'Più filtri' ?>
         </button>
 
@@ -212,7 +211,7 @@ $ingredienti = $db->ingredienti->aggregate($pipeline);
 
     <div class="filters-actions">
 
-        <button type="submit">
+        <button type="submit" class="btn">
             Filtra
         </button>
 

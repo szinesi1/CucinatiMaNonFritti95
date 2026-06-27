@@ -10,10 +10,10 @@ include __DIR__ . '/interface/header.php';
 </p>
 
 <div class="home-buttons">
-    <a class="btn" href="pages/ricette/index.php">🍝 Ricette</a>
-    <a class="btn" href="pages/ingredienti/index.php">🥕 Ingredienti</a>
-    <a class="btn" href="pages/regioni/index.php">🗺️ Regioni</a>
-    <a class="btn" href="pages/libri/index.php">📚 Libri</a>
+    <a class="btn-home" href="pages/ricette/index.php">🍝 Ricette</a>
+    <a class="btn-home" href="pages/ingredienti/index.php">🥕 Ingredienti</a>
+    <a class="btn-home" href="pages/regioni/index.php">🗺️ Regioni</a>
+    <a class="btn-home" href="pages/libri/index.php">📚 Libri</a>
 </div>
 
 <?php include __DIR__ . '/interface/footer.php'; ?>

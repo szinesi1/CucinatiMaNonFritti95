@@ -9,28 +9,29 @@
     margin-top: 40px;
 }
 
-/* Titolo home */
+/* Titolo */
 
 .home-container h1 {
     margin-bottom: 1rem;
-    color: var(--colore-header-bg);
+    color: var(--spring-green);
 }
 
 /* Descrizione */
 
 .home-description {
-    max-width: 600px;
+    max-width: 650px;
     margin: 20px auto;
-    font-size: 18px;
-    line-height: 1.6;
+    color: var(--brown);
+    font-size: 1.1rem;
+    line-height: 1.7;
 }
 
-/* Contenitore dei pulsanti */
+/* Contenitore pulsanti */
 
 .home-buttons {
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
     gap: 20px;
-    margin-top: 30px;
+    margin-top: 35px;
 }
