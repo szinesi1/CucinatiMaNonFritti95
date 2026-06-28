@@ -10,10 +10,18 @@ if (!$codRegione) {
     exit;
 }
 
-// Recupero la regione tramite COD
-$regione = $db->regioni->findOne([
-    "cod" => $codRegione
-]);
+/* =========================
+   REGIONE
+========================= */
+
+$stmt = $pdo->prepare("
+    SELECT *
+    FROM Regioni
+    WHERE cod = ?
+");
+
+$stmt->execute([$codRegione]);
+$regione = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if (!$regione) {
     echo "<p><em>Regione non trovata.</em></p>";
@@ -21,8 +29,28 @@ if (!$regione) {
     exit;
 }
 
-// Link di ritorno
+/* =========================
+   BACK URL
+========================= */
+
 $backUrl = $_SERVER['HTTP_REFERER'] ?? 'pages/regioni/index.php';
+
+/* =========================
+   RICETTE REGIONALI (JOIN)
+========================= */
+
+$stmt = $pdo->prepare("
+    SELECT 
+        RR.numeroRicetta,
+        R.titolo,
+        R.numero
+    FROM RicettaRegionale RR
+    LEFT JOIN Ricette R ON R.numero = RR.numeroRicetta
+    WHERE RR.cod = ?
+");
+
+$stmt->execute([$codRegione]);
+$ricetteTipiche = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <a href="<?= htmlspecialchars($backUrl) ?>" class="btn-back">
@@ -33,28 +61,16 @@ $backUrl = $_SERVER['HTTP_REFERER'] ?? 'pages/regioni/index.php';
 
 <h3>Ricette della regione</h3>
 
-<?php
-$ricetteTipiche = $db->ricettaRegionale->find([
-    "cod" => $codRegione
-]);
-?>
-
 <ul>
 
 <?php foreach ($ricetteTipiche as $rt): ?>
 
-    <?php
-    $ricetta = $db->ricette->findOne([
-        "numero" => $rt['numeroRicetta']
-    ]);
-    ?>
-
     <li>
 
-        <?php if ($ricetta): ?>
+        <?php if (!empty($rt['numero'])): ?>
 
-            <a href="pages/ricette/dettaglio.php?numero=<?= urlencode($ricetta['numero']) ?>&from=regione&cod=<?= urlencode($regione['cod']) ?>">
-                <?= htmlspecialchars($ricetta['titolo']) ?>
+            <a href="../ricette/dettaglio.php?numero=<?= urlencode($rt['numero']) ?>&from=regione&cod=<?= urlencode($regione['cod']) ?>">
+                <?= htmlspecialchars($rt['titolo']) ?>
             </a>
 
         <?php else: ?>
@@ -69,7 +85,7 @@ $ricetteTipiche = $db->ricettaRegionale->find([
 
 </ul>
 
-<a href="pages/regioni/index.php" class="btn-category">
+<a href="../regioni/index.php" class="btn-category">
     ← Torna alle regioni
 </a>
 

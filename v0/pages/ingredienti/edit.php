@@ -9,55 +9,90 @@ if (!$ingrediente || !$numeroRicetta) {
     die("Ingrediente non specificato.");
 }
 
-/* record principale */
-$record = $db->ingredienti->findOne([
-    'ingrediente' => $ingrediente,
-    'numeroRicetta' => $numeroRicetta
-]);
+/* =========================
+   RECORD PRINCIPALE
+========================= */
+
+$stmt = $pdo->prepare("
+    SELECT *
+    FROM Ingredienti
+    WHERE ingrediente = ?
+    AND numeroRicetta = ?
+");
+
+$stmt->execute([$ingrediente, $numeroRicetta]);
+$record = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if (!$record) {
     die("Ingrediente non trovato.");
 }
 
-/* ricetta */
-$ricetta = $db->ricette->findOne([
-    'numero' => $numeroRicetta
-]);
+/* =========================
+   RICETTA
+========================= */
 
-/* altre ricette */
-$altreRicette = $db->ingredienti->find([
-    'ingrediente' => $ingrediente,
-    'numeroRicetta' => ['$ne' => $numeroRicetta]
-]);
+$stmt = $pdo->prepare("
+    SELECT *
+    FROM Ricette
+    WHERE numero = ?
+    LIMIT 1
+");
 
-/* SALVATAGGIO */
+$stmt->execute([$numeroRicetta]);
+$ricetta = $stmt->fetch(PDO::FETCH_ASSOC);
+
+/* =========================
+   ALTRE RICETTE (stesso ingrediente)
+========================= */
+
+$stmt = $pdo->prepare("
+    SELECT *
+    FROM Ingredienti
+    WHERE ingrediente = ?
+    AND numeroRicetta != ?
+");
+
+$stmt->execute([$ingrediente, $numeroRicetta]);
+$altreRicette = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+/* =========================
+   SALVATAGGIO
+========================= */
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $nuovoIngrediente = trim($_POST['ingrediente'] ?? '');
     $quantita = trim($_POST['quantita'] ?? '');
     $propaga = isset($_POST['propaga']);
 
-    $update = [
-        'quantità' => $quantita
-    ];
+    /* UPDATE principale */
+    $stmt = $pdo->prepare("
+        UPDATE Ingredienti
+        SET ingrediente = ?, quantita = ?
+        WHERE ingrediente = ?
+        AND numeroRicetta = ?
+    ");
 
-    if ($nuovoIngrediente !== '') {
-        $update['ingrediente'] = $nuovoIngrediente;
-    }
+    $stmt->execute([
+        $nuovoIngrediente !== '' ? $nuovoIngrediente : $ingrediente,
+        $quantita,
+        $ingrediente,
+        $numeroRicetta
+    ]);
 
-    $db->ingredienti->updateOne(
-        [
-            'ingrediente' => $ingrediente,
-            'numeroRicetta' => $numeroRicetta
-        ],
-        ['$set' => $update]
-    );
-
+    /* propagazione nome ingrediente */
     if ($propaga && $nuovoIngrediente !== '') {
-        $db->ingredienti->updateMany(
-            ['ingrediente' => $ingrediente],
-            ['$set' => ['ingrediente' => $nuovoIngrediente]]
-        );
+
+        $stmt = $pdo->prepare("
+            UPDATE Ingredienti
+            SET ingrediente = ?
+            WHERE ingrediente = ?
+        ");
+
+        $stmt->execute([
+            $nuovoIngrediente,
+            $ingrediente
+        ]);
     }
 
     header("Location: ../ricette/dettaglio.php?numero=" . $numeroRicetta);
@@ -69,7 +104,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <p class="recipe-title-edit">
     <strong>Ricetta:</strong>
-    <?= htmlspecialchars($ricetta['titolo']) ?>
+    <?= htmlspecialchars($ricetta['titolo'] ?? '') ?>
 </p>
 
 <div class="edit-grid">
@@ -77,7 +112,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <!-- SINISTRA -->
     <div class="edit-main">
 
-        <form method="post">
+        <form method="post" id="editForm">
 
             <p>
                 Nome ingrediente<br>
@@ -92,9 +127,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <input type="text"
                        name="quantita"
                        class="text-input"
-                       value="<?= htmlspecialchars($record['quantità']) ?>"
+                       value="<?= htmlspecialchars($record['quantita']) ?>"
                        required>
             </p>
+
+            <!-- bottone dentro form (FIX IMPORTANTE) -->
+            <div class="form-actions">
+
+                <a href="../ricette/dettaglio.php?numero=<?= $numeroRicetta ?>"
+                   class="btn btn-undo">
+                    Annulla
+                </a>
+
+                <button type="submit" class="btn btn-save">
+                    Salva
+                </button>
+
+            </div>
 
         </form>
 
@@ -103,9 +152,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <!-- DESTRA -->
     <div class="edit-side">
 
-        <!-- checkbox -->
         <label class="check-card">
-            <input type="checkbox" name="propaga">
+            <input type="checkbox" name="propaga" form="editForm">
 
             <div class="check-ui">
                 <div class="check-box"></div>
@@ -117,35 +165,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
         </label>
 
-        <!-- ricette collegate -->
         <div class="side-box">
             <h4>Presente anche in:</h4>
 
             <ul>
                 <?php foreach ($altreRicette as $r): ?>
                     <?php
-                    $info = $db->ricette->findOne([
-                        'numero' => $r['numeroRicetta']
-                    ]);
+                    $stmt = $pdo->prepare("
+                        SELECT titolo
+                        FROM Ricette
+                        WHERE numero = ?
+                        LIMIT 1
+                    ");
+                    $stmt->execute([$r['numeroRicetta']]);
+                    $info = $stmt->fetch(PDO::FETCH_ASSOC);
                     ?>
                     <li><?= htmlspecialchars($info['titolo'] ?? 'Ricetta') ?></li>
                 <?php endforeach; ?>
             </ul>
+
         </div>
 
     </div>
 </div>
-
-<div class="form-actions">
-        <a
-            href="/CucinatiMaNonFritti95/v0/pages/ricette/dettaglio.php?numero=<?= $numeroRicetta ?>"
-            class="btn btn-undo">
-            Annulla
-        </a>
-        <button type="submit" class="btn btn-save">
-            Salva
-        </button>
-    </div>
-<form id="editForm" method="post"></form>
 
 <?php include __DIR__ . '/../../interface/footer.php'; ?>

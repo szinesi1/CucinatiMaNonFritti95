@@ -2,130 +2,63 @@
 require __DIR__ . '/../../includes/db_connect.php';
 include __DIR__ . '/../../interface/header.php';
 
-// Raggruppo ingredienti per nome e conto quante ricette li usano
-$ingredienti = $db->ingredienti->aggregate([
-    [
-        '$group' => [
-            '_id' => '$ingrediente',
-            'conteggio' => ['$sum' => 1]
-        ]
-    ],
-    [
-        '$sort' => ['_id' => 1]
-    ]
-]);
-
-// =========================
-// FILTRI
-// =========================
+/* =========================
+   FILTRI
+========================= */
 
 $search = trim($_GET['search'] ?? '');
 
 $selectedTipi = $_GET['tipo'] ?? [];
 $selectedOrigini = $_GET['origine'] ?? [];
 
-if (!is_array($selectedTipi)) {
-    $selectedTipi = [];
-}
+if (!is_array($selectedTipi)) $selectedTipi = [];
+if (!is_array($selectedOrigini)) $selectedOrigini = [];
 
-if (!is_array($selectedOrigini)) {
-    $selectedOrigini = [];
-}
-
-/* Tipologie ingredienti */
-
+/* dati statici UI (non DB) */
 $tipi = [
-    "Verdura",
-    "Frutta",
-    "Carne",
-    "Pesce",
-    "Latticini",
-    "Cereali",
-    "Legumi",
-    "Spezie",
-    "Erbe aromatiche",
-    "Condimenti"
+    "Verdura","Frutta","Carne","Pesce","Latticini",
+    "Cereali","Legumi","Spezie","Erbe aromatiche","Condimenti"
 ];
 
-/* Origini */
+$origini = ["Vegetale","Animale","Minerale"];
 
-$origini = [
-    "Vegetale",
-    "Animale",
-    "Minerale"
-];
+/* =========================
+   QUERY BASE
+========================= */
 
-$match = [];
+$sql = "
+    SELECT 
+        ingrediente,
+        COUNT(*) AS conteggio
+    FROM Ingredienti
+    WHERE 1=1
+";
 
-/* Ricerca ingrediente */
+$params = [];
 
-if (!empty($search)) {
-
-    $match['ingrediente'] = [
-        '$regex' => $search,
-        '$options' => 'i'
-    ];
+/* SEARCH */
+if ($search !== '') {
+    $sql .= " AND ingrediente LIKE ?";
+    $params[] = "%$search%";
 }
 
-/* Tipologie multiple */
+/* GROUP */
+$sql .= " GROUP BY ingrediente";
 
-if (!empty($selectedTipi)) {
+/* ORDER */
+$sql .= " ORDER BY ingrediente ASC";
 
-    $match['tipologia'] = [
-        '$in' => $selectedTipi
-    ];
-}
-
-/* Origini multiple */
-
-if (!empty($selectedOrigini)) {
-
-    $match['origine'] = [
-        '$in' => $selectedOrigini
-    ];
-}
+$stmt = $pdo->prepare($sql);
+$stmt->execute($params);
+$ingredienti = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 $showFilters =
     !empty($selectedTipi) ||
     !empty($selectedOrigini);
-
-/* Query Mongo */
-
-$pipeline = [];
-
-if (!empty($match)) {
-
-    $pipeline[] = [
-        '$match' => $match
-    ];
-}
-
-$pipeline[] = [
-    '$group' => [
-        '_id' => '$ingrediente',
-        'tipologia' => [
-            '$first' => '$tipologia'
-        ],
-        'origine' => [
-            '$first' => '$origine'
-        ],
-        'conteggio' => [
-            '$sum' => 1
-        ]
-    ]
-];
-
-$pipeline[] = [
-    '$sort' => [
-        '_id' => 1
-    ]
-];
-
-$ingredienti = $db->ingredienti->aggregate($pipeline);
 ?>
 
 <!-- =========================
-     FILTRI UI
+     FILTRI UI (INVARIATI)
 ========================= -->
 
 <form method="GET" class="filters">
@@ -139,182 +72,98 @@ $ingredienti = $db->ingredienti->aggregate($pipeline);
             placeholder="Cerca ingrediente..."
             value="<?= htmlspecialchars($search) ?>">
 
-        <button
-            type="button"
-            id="toggleFilters"
-            class="secondary-button">
+        <button type="button" id="toggleFilters" class="secondary-button">
             <?= $showFilters ? 'Meno filtri' : 'Più filtri' ?>
         </button>
 
     </div>
 
-    <div
-        id="advancedFilters"
-        class="advanced-filters <?= $showFilters ? 'open' : '' ?>"
-    >
+    <div id="advancedFilters"
+         class="advanced-filters <?= $showFilters ? 'open' : '' ?>">
 
-        <fieldset class="tipologie-fieldset">
-
+        <fieldset>
             <legend>Origine</legend>
 
             <div class="filter-group origine-group">
-
                 <?php foreach ($origini as $origine): ?>
-
                     <label>
-
-                        <input
-                            type="checkbox"
-                            name="origine[]"
-                            value="<?= htmlspecialchars($origine) ?>"
-                            <?= in_array($origine, $selectedOrigini) ? 'checked' : '' ?>
-                        >
-
+                        <input type="checkbox"
+                               name="origine[]"
+                               value="<?= htmlspecialchars($origine) ?>"
+                               <?= in_array($origine, $selectedOrigini) ? 'checked' : '' ?>>
                         <?= htmlspecialchars($origine) ?>
-
                     </label>
-
                 <?php endforeach; ?>
-
             </div>
-
         </fieldset>
-        
-        <fieldset>
 
+        <fieldset>
             <legend>Tipologia</legend>
 
             <div class="filter-group tipologia-ing-group">
-
                 <?php foreach ($tipi as $tipo): ?>
-
                     <label>
-
-                        <input
-                            type="checkbox"
-                            name="tipo[]"
-                            value="<?= htmlspecialchars($tipo) ?>"
-                            <?= in_array($tipo, $selectedTipi) ? 'checked' : '' ?>
-                        >
-
+                        <input type="checkbox"
+                               name="tipo[]"
+                               value="<?= htmlspecialchars($tipo) ?>"
+                               <?= in_array($tipo, $selectedTipi) ? 'checked' : '' ?>>
                         <?= htmlspecialchars($tipo) ?>
-
                     </label>
-
                 <?php endforeach; ?>
-
             </div>
-
         </fieldset>
 
     </div>
 
     <div class="filters-actions">
 
-        <button type="submit" class="btn">
-            Filtra
-        </button>
+        <button type="submit" class="btn">Filtra</button>
 
-        <a href="/CucinatiMaNonFritti95/v0/pages/ingredienti/index.php" class="reset-button">
-            Reset
-        </a>
+        <a href="index.php" class="reset-button">Reset</a>
 
     </div>
 
 </form>
 
 <script>
-
 document.addEventListener('DOMContentLoaded', function () {
-
     const toggleBtn = document.getElementById('toggleFilters');
     const filters = document.getElementById('advancedFilters');
 
     toggleBtn.addEventListener('click', function () {
-
         filters.classList.toggle('open');
 
         toggleBtn.textContent =
             filters.classList.contains('open')
                 ? 'Meno filtri'
                 : 'Più filtri';
-
     });
-
 });
-
 </script>
 
 <h2>Elenco Ingredienti</h2>
-
-<?php
-$letteraCorrente = '';
-?>
-
 <div class="ingredienti-container">
 
 <?php foreach ($ingredienti as $ing): ?>
+    <?php $lettera = strtoupper(substr($ing['ingrediente'], 0, 1)); ?>
+    <div class="card">
+        <div class="card-body">
 
-    <?php
-    $lettera = strtoupper(substr($ing['_id'], 0, 1));
+            <h5 class="card-title">
+                <?= htmlspecialchars($ing['ingrediente']) ?>
+            </h5>
 
-    if ($lettera !== $letteraCorrente):
+            <p class="ingrediente-conteggio">
+                Usato in <strong><?= $ing['conteggio'] ?></strong> ricette
+            </p>
 
-        if ($letteraCorrente !== '') {
-            echo '</div>';
-        }
-
-        $letteraCorrente = $lettera;
-    ?>
-
-        <h3 class="lettera-titolo">
-            <?= htmlspecialchars($lettera) ?>
-        </h3>
-
-        <div class="card-grid">
-
-    <?php endif; ?>
-
-        <div class="card">
-
-            <div class="card-body">
-
-                <h5 class="card-title">
-                    <?= htmlspecialchars($ing['_id']) ?>
-                </h5>
-
-                <?php if (!empty($ing['tipologia'])): ?>
-                    <p class="ingrediente-info">
-                        <?= htmlspecialchars($ing['tipologia']) ?>
-                    </p>
-                <?php endif; ?>
-
-                <?php if (!empty($ing['origine'])): ?>
-                    <p class="ingrediente-info">
-                        <?= htmlspecialchars($ing['origine']) ?>
-                    </p>
-                <?php endif; ?>
-
-                <p class="ingrediente-conteggio">
-                    Usato in <strong><?= $ing['conteggio'] ?></strong> ricette
-                </p>
-
-                <a
-                    href="pages/ingredienti/dettaglio.php?ingrediente=<?= urlencode($ing['_id']) ?>"
-                    class="card-button"
-                >
-                    Vedi ingrediente
-                </a>
-
-            </div>
-
+            <a href="dettaglio.php?ingrediente=<?= urlencode($ing['ingrediente']) ?>"
+               class="card-button">
+                Vedi ingrediente
+            </a>
         </div>
-
-<?php endforeach; ?>
-
-<?php if ($letteraCorrente !== ''): ?>
     </div>
-<?php endif; ?>
+<?php endforeach; ?>
 
 </div>
 

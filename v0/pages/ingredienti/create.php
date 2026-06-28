@@ -10,9 +10,16 @@ $numeroRicetta = isset($_GET['numero'])
     ? (int) $_GET['numero']
     : (int) ($_POST['numeroRicetta'] ?? 0);
 
-$ricetta = $db->ricette->findOne([
-    'numero' => $numeroRicetta
-]);
+/* MYSQL: SELECT invece di findOne */
+$stmt = $pdo->prepare("
+    SELECT *
+    FROM Ricette
+    WHERE numero = ?
+    LIMIT 1
+");
+
+$stmt->execute([$numeroRicetta]);
+$ricetta = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if (!$ricetta) {
     echo "<p>Ricetta non trovata.</p>";
@@ -31,10 +38,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($ingrediente !== '' && $quantita !== '') {
 
-        $db->ingredienti->insertOne([
-            'ingrediente'    => $ingrediente,
-            'numeroRicetta'  => $numeroRicetta,
-            'quantità'       => $quantita
+        /* MYSQL: INSERT invece di insertOne */
+        $stmt = $pdo->prepare("
+            INSERT INTO Ingredienti (numeroRicetta, numero, ingrediente, quantita)
+            VALUES (?, ?, ?, ?)
+        ");
+
+        /* numero progressivo ingrediente (semplice gestione) */
+        $stmtNum = $pdo->prepare("
+            SELECT COALESCE(MAX(numero), 0) + 1 AS nextNum
+            FROM Ingredienti
+            WHERE numeroRicetta = ?
+        ");
+
+        $stmtNum->execute([$numeroRicetta]);
+        $next = $stmtNum->fetch(PDO::FETCH_ASSOC)['nextNum'];
+
+        $stmt->execute([
+            $numeroRicetta,
+            $next,
+            $ingrediente,
+            $quantita
         ]);
 
         header("Location: ../ricette/dettaglio.php?numero=" . $numeroRicetta);
@@ -54,10 +78,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         type="hidden"
         name="numeroRicetta"
         value="<?= $numeroRicetta ?>">
-
     <p>
         <label for="ingrediente">Nome ingrediente</label><br>
-
         <input
             type="text"
             id="ingrediente"
@@ -68,7 +90,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <p>
         <label for="quantita">Quantità</label><br>
-
         <input
             type="text"
             id="quantita"
@@ -78,19 +99,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </p>
 
     <div class="form-actions">
-
         <a
             href="/CucinatiMaNonFritti95/v0/pages/ricette/dettaglio.php?numero=<?= $numeroRicetta ?>"
             class="btn btn-undo">
             Annulla
         </a>
-
         <button type="submit" class="btn btn-save">
             Salva
         </button>
-
     </div>
-
 </form>
 
 <?php include __DIR__ . '/../../interface/footer.php'; ?>

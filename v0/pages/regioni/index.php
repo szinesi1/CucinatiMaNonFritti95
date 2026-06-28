@@ -3,151 +3,91 @@ require __DIR__ . '/../../includes/db_connect.php';
 include __DIR__ . '/../../interface/header.php';
 
 /* =========================
-   FILTRI
+   RECUPERO RICETTA
 ========================= */
 
-$search = trim($_GET['search'] ?? '');
-$selectedZone = $_GET['zona'] ?? [];
+$numeroRicetta = isset($_GET['numero'])
+    ? (int) $_GET['numero']
+    : (int) ($_POST['numeroRicetta'] ?? 0);
 
-if (!is_array($selectedZone)) {
-    $selectedZone = [];
+$stmt = $pdo->prepare("SELECT * FROM ricette WHERE numero = ?");
+$stmt->execute([$numeroRicetta]);
+$ricetta = $stmt->fetch(PDO::FETCH_ASSOC);
+
+if (!$ricetta) {
+    echo "<p>Ricetta non trovata.</p>";
+    include __DIR__ . '/../../interface/footer.php';
+    exit;
 }
 
-/* zone disponibili (coerenti e riusabili) */
-$zone = [
-    "Nord",
-    "Centro",
-    "Sud",
-    "Isole"
-];
+/* =========================
+   SALVATAGGIO
+========================= */
 
-/* query base */
-$baseQuery = [];
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-/* filtro ricerca (senza regex: match parziale “manuale” lato PHP) */
-if (!empty($search)) {
-    $baseQuery['nome'] = [
-        '$regex' => $search,
-        '$options' => 'i'
-    ];
+    $ingrediente = trim($_POST['ingrediente'] ?? '');
+    $quantita = trim($_POST['quantita'] ?? '');
+
+    if ($ingrediente !== '' && $quantita !== '') {
+
+        $stmt = $pdo->prepare("
+            INSERT INTO ingredienti (numeroRicetta, numero, ingrediente, quantita)
+            VALUES (?, ?, ?, ?)
+        ");
+
+        /* numero progressivo ingrediente nella ricetta */
+        $stmtCount = $pdo->prepare("
+            SELECT COUNT(*) FROM ingredienti WHERE numeroRicetta = ?
+        ");
+        $stmtCount->execute([$numeroRicetta]);
+        $nextNumero = $stmtCount->fetchColumn() + 1;
+
+        $stmt->execute([
+            $numeroRicetta,
+            $nextNumero,
+            $ingrediente,
+            $quantita
+        ]);
+
+        header("Location: ../ricette/dettaglio.php?numero=" . $numeroRicetta);
+        exit;
+    }
 }
-
-/* filtro zona */
-if (!empty($selectedZone)) {
-    $baseQuery['zona'] = [
-        '$in' => $selectedZone
-    ];
-}
-
-$showFilters = !empty($selectedZone) || !empty($search);
-
-/* query regioni */
-$regioni = $db->regioni->find($baseQuery, [
-    'sort' => ['nome' => 1]
-]);
 ?>
 
-<!-- =========================
-     FILTRI UI
-========================= -->
+<h2>
+    Nuovo ingrediente per la ricetta:
+    <?= htmlspecialchars($ricetta['titolo']) ?>
+</h2>
 
-<form method="GET" class="filters">
-    <div class="filters-top">
-        <input
-            type="text"
-            name="search"
-            class="filters-input"
-            placeholder="Cerca regione..."
-            value="<?= htmlspecialchars($search) ?>">
-        <button
-            type="button"
-            id="toggleFilters"
-            class="secondary-button">
-            <?= $showFilters ? 'Meno filtri' : 'Più filtri' ?>
-        </button>
-    </div>
+<form method="post">
 
-    <div
-        id="advancedFilters"
-        class="advanced-filters <?= $showFilters ? 'open' : '' ?>">
-        <fieldset>
-            <legend>Zona geografica</legend>
-            <div class="filter-group zone-group">
-                <?php foreach ($zone as $z): ?>
-                    <label>
-                        <input
-                            type="checkbox"
-                            name="zona[]"
-                            value="<?= htmlspecialchars($z) ?>"
-                            <?= in_array($z, $selectedZone) ? 'checked' : '' ?>>
-                        <?= htmlspecialchars($z) ?>
-                    </label>
-                <?php endforeach; ?>
-            </div>
-        </fieldset>
-    </div>
+    <input type="hidden" name="numeroRicetta" value="<?= $numeroRicetta ?>">
 
-    <div class="filters-actions">
-        <button type="submit" class="btn">
-            Filtra
-        </button>
-        <a href="/CucinatiMaNonFritti95/v0/pages/regioni/index.php" class="reset-button">
-            Reset
+    <p>
+        <label for="ingrediente">Nome ingrediente</label><br>
+        <input type="text" id="ingrediente" name="ingrediente" class="text-input" required>
+    </p>
+
+    <p>
+        <label for="quantita">Quantità</label><br>
+        <input type="text" id="quantita" name="quantita" class="text-input" required>
+    </p>
+
+    <div class="form-actions">
+
+        <a href="../../pages/ricette/dettaglio.php?numero=<?= $numeroRicetta ?>"
+           class="btn btn-undo">
+            Annulla
         </a>
+
+        <button type="submit" class="btn btn-save">
+            Salva
+        </button>
+
     </div>
+
 </form>
-
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    const toggleBtn = document.getElementById('toggleFilters');
-    const filters = document.getElementById('advancedFilters');
-    toggleBtn.addEventListener('click', function () {
-        filters.classList.toggle('open');
-
-        if (filters.classList.contains('open')) {
-            toggleBtn.textContent = 'Meno filtri';
-        } else {
-            toggleBtn.textContent = 'Più filtri';
-        }
-    });
-});
-</script>
-
-<h2>Regioni italiane</h2>
-
-<!-- =========================
-     LISTA REGIONI
-========================= -->
-
-<div class="card-grid">
-<?php foreach ($regioni as $regione): ?>
-<?php
-$numRicette = $db->ricettaRegionale->countDocuments([
-    "cod" => $regione["cod"]
-]);
-?>
-
-<div class="card">
-    <div class="card-body">
-        <h5 class="card-title">
-            🗺️ <?= htmlspecialchars($regione['nome']) ?>
-        </h5>
-        <p class="card-text">
-            Zona: <?= htmlspecialchars($regione['zona']) ?>
-        </p>
-        <p class="card-text">
-            🍽️ <?= $numRicette ?> ricette
-        </p>
-        <a
-            href="pages/regioni/dettaglio.php?regione=<?= urlencode($regione['cod']) ?>"
-            class="card-button">
-            Visualizza
-        </a>
-    </div>
-</div>
-
-<?php endforeach; ?>
-
-</div>
 
 <?php include __DIR__ . '/../../interface/footer.php'; ?>
