@@ -3,91 +3,111 @@ require __DIR__ . '/../../includes/db_connect.php';
 include __DIR__ . '/../../interface/header.php';
 
 /* =========================
-   RECUPERO RICETTA
+   FILTRI
 ========================= */
 
-$numeroRicetta = isset($_GET['numero'])
-    ? (int) $_GET['numero']
-    : (int) ($_POST['numeroRicetta'] ?? 0);
+$search = trim($_GET['search'] ?? '');
+$selectedZone = $_GET['zona'] ?? [];
 
-$stmt = $pdo->prepare("SELECT * FROM ricette WHERE numero = ?");
-$stmt->execute([$numeroRicetta]);
-$ricetta = $stmt->fetch(PDO::FETCH_ASSOC);
-
-if (!$ricetta) {
-    echo "<p>Ricetta non trovata.</p>";
-    include __DIR__ . '/../../interface/footer.php';
-    exit;
+if (!is_array($selectedZone)) {
+    $selectedZone = [];
 }
 
+/* zone */
+$zone = ["Nord", "Centro", "Sud", "Isole"];
+
 /* =========================
-   SALVATAGGIO
+   QUERY REGIONI (MYSQL)
 ========================= */
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+$sql = "SELECT * FROM Regioni WHERE 1=1";
+$params = [];
 
-    $ingrediente = trim($_POST['ingrediente'] ?? '');
-    $quantita = trim($_POST['quantita'] ?? '');
+/* filtro nome */
+if ($search !== '') {
+    $sql .= " AND nome LIKE ?";
+    $params[] = "%$search%";
+}
 
-    if ($ingrediente !== '' && $quantita !== '') {
+/* filtro zona */
+if (!empty($selectedZone)) {
+    $in = implode(',', array_fill(0, count($selectedZone), '?'));
+    $sql .= " AND zona IN ($in)";
+    $params = array_merge($params, $selectedZone);
+}
 
-        $stmt = $pdo->prepare("
-            INSERT INTO ingredienti (numeroRicetta, numero, ingrediente, quantita)
-            VALUES (?, ?, ?, ?)
-        ");
+$sql .= " ORDER BY nome ASC";
 
-        /* numero progressivo ingrediente nella ricetta */
-        $stmtCount = $pdo->prepare("
-            SELECT COUNT(*) FROM ingredienti WHERE numeroRicetta = ?
-        ");
-        $stmtCount->execute([$numeroRicetta]);
-        $nextNumero = $stmtCount->fetchColumn() + 1;
+$stmt = $pdo->prepare($sql);
+$stmt->execute($params);
+$regioni = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        $stmt->execute([
-            $numeroRicetta,
-            $nextNumero,
-            $ingrediente,
-            $quantita
-        ]);
+/* =========================
+   FUNZIONE COUNT RICETTE
+========================= */
 
-        header("Location: ../ricette/dettaglio.php?numero=" . $numeroRicetta);
-        exit;
-    }
+function countRicetteRegione($pdo, $codRegione) {
+    $stmt = $pdo->prepare("
+        SELECT COUNT(*) 
+        FROM RicettaRegionale
+        WHERE cod = ?
+    ");
+    $stmt->execute([$codRegione]);
+    return (int)$stmt->fetchColumn();
 }
 ?>
 
-<h2>
-    Nuovo ingrediente per la ricetta:
-    <?= htmlspecialchars($ricetta['titolo']) ?>
-</h2>
+<h2>Regioni italiane</h2>
 
-<form method="post">
+<form method="GET" class="filters">
 
-    <input type="hidden" name="numeroRicetta" value="<?= $numeroRicetta ?>">
+    <input type="text"
+           name="search"
+           class="filters-input"
+           placeholder="Cerca regione..."
+           value="<?= htmlspecialchars($search) ?>">
 
-    <p>
-        <label for="ingrediente">Nome ingrediente</label><br>
-        <input type="text" id="ingrediente" name="ingrediente" class="text-input" required>
-    </p>
+    <div id="advancedFilters" class="advanced-filters">
+        <?php foreach ($zone as $z): ?>
+            <label>
+                <input type="checkbox"
+                       name="zona[]"
+                       value="<?= $z ?>"
+                       <?= in_array($z, $selectedZone) ? 'checked' : '' ?>>
+                <?= $z ?>
+            </label>
+        <?php endforeach; ?>
+    </div>
 
-    <p>
-        <label for="quantita">Quantità</label><br>
-        <input type="text" id="quantita" name="quantita" class="text-input" required>
-    </p>
-
-    <div class="form-actions">
-
-        <a href="../../pages/ricette/dettaglio.php?numero=<?= $numeroRicetta ?>"
-           class="btn btn-undo">
-            Annulla
-        </a>
-
-        <button type="submit" class="btn btn-save">
-            Salva
-        </button>
-
+    <<div class="filters-actions">
+        <button type="submit" class="btn">Filtra</button>
+        <a href="index.php" class="reset-button">Reset</a>
     </div>
 
 </form>
+
+<div class="card-grid">
+
+<?php foreach ($regioni as $regione): ?>
+
+    <?php
+    $numRicette = countRicetteRegione($pdo, $regione['cod']);
+    ?>
+
+    <div class="card card-body">
+        <h3 class="card-title"><?= htmlspecialchars($regione['nome']) ?></h3>
+
+        <p>Zona: <?= htmlspecialchars($regione['zona']) ?></p>
+
+        <p> <?= $numRicette ?> ricette</p>
+
+        <a href="dettaglio.php?regione=<?= urlencode($regione['cod']) ?>" class="card-button">
+            Visualizza
+        </a>
+    </div>
+
+<?php endforeach; ?>
+
+</div>
 
 <?php include __DIR__ . '/../../interface/footer.php'; ?>

@@ -155,7 +155,7 @@ $numRicette = $stmt->fetchColumn() ?? 0;
 
 <tr>
     <td>
-        <a href="dettaglio.php?isbn=<?= urlencode($libro['codISBN']) ?>">
+        <a href="pages/libri/dettaglio.php?isbn=<?= urlencode($libro['codISBN']) ?>">
             <?= htmlspecialchars($libro['titolo']) ?>
         </a>
     </td>

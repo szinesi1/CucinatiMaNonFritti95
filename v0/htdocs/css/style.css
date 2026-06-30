@@ -1,0 +1,18 @@
+@import url("variables.css");
+@import url("general.css");
+@import url("layout.css");
+@import url("utilities.css");
+
+@import url("components/buttons.css");
+@import url("components/cards.css");
+@import url("components/filters.css");
+@import url("components/checkbox.css");
+@import url("components/modal.css");
+
+@import url("pages/home.css");
+@import url("pages/ricette.css");
+@import url("pages/ingredienti.css");
+@import url("pages/dettaglio.css");
+@import url("pages/regioni.css");
+@import url("pages/libri.css");
+@import url("pages/crud.css");
