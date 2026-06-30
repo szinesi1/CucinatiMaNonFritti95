@@ -134,8 +134,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <!-- bottone dentro form (FIX IMPORTANTE) -->
             <div class="form-actions">
 
-                <a href="../ricette/dettaglio.php?numero=<?= $numeroRicetta ?>"
-                   class="btn btn-undo">
+                <a href="/pages/ricette/dettaglio.php?numero=<?= $numeroRicetta ?>" class="btn btn-undo">
                     Annulla
                 </a>
 

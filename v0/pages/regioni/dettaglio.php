@@ -69,7 +69,7 @@ $ricetteTipiche = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         <?php if (!empty($rt['numero'])): ?>
 
-            <a href="../ricette/dettaglio.php?numero=<?= urlencode($rt['numero']) ?>&from=regione&cod=<?= urlencode($regione['cod']) ?>">
+            <a href="pages/ricette/dettaglio.php?numero=<?= urlencode($rt['numero']) ?>&from=regione&cod=<?= urlencode($regione['cod']) ?>">
                 <?= htmlspecialchars($rt['titolo']) ?>
             </a>
 
@@ -85,7 +85,7 @@ $ricetteTipiche = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 </ul>
 
-<a href="../regioni/index.php" class="btn-category">
+<a href="pages/regioni/index.php" class="btn-category">
     ← Torna alle regioni
 </a>
 

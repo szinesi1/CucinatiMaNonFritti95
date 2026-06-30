@@ -1,12 +1,10 @@
 /* =========================
    GRIGLIA REGIONI
 ========================= */
-
 .zone-group {
     display: flex;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
     gap: 8px;
-    overflow-x: auto;
 }
 
 .zone-group label {
@@ -14,38 +12,4 @@
     border-radius: 999px;
     background: var(--yellow-soft);
     transition: .2s;
-}
-
-.region-card {
-    background: white;
-    border-radius: 12px;
-    border: 1px solid #e5e5e5;
-    padding: 1rem;
-    transition: 0.2s ease;
-}
-
-.region-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 6px 18px rgba(0,0,0,0.1);
-}
-
-.region-card a {
-    text-decoration: none;
-    color: inherit;
-    display: block;
-}
-
-.region-card h3 {
-    margin: 0 0 0.5rem 0;
-}
-
-.region-card .zona {
-    font-size: 0.85rem;
-    color: #666;
-    margin-bottom: 0.5rem;
-}
-
-.region-card .ricette {
-    font-weight: bold;
-    color: #333;
 }

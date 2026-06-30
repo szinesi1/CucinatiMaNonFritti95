@@ -1,29 +1,25 @@
 <?php
 // navbar.php
-
-// Si attiva il link della pagina aperta così si capisce in che parte del sito ci si trova:
-
 $current = $_SERVER['REQUEST_URI'];
-/**
- * @param string $section
- */
-if (!function_exists('isActive')) {
-    function isActive($section) {
-        $path = $_SERVER['REQUEST_URI'];
 
-        // Caso HOME: sei in /v0/ o /v0/index.php
-        if (preg_match('#/v0(/index\.php)?$#', $path)) {
+if (!function_exists('isActive')) {
+
+    function isActive($section)
+    {
+        $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+
+        // Se siamo in /pages/...
+        if (preg_match('#/pages/([^/]+)/#', $path, $matches)) {
+            $currentSection = $matches[1];
+        }
+        // Altrimenti è la home
+        else {
             $currentSection = 'home';
-        } 
-        // Caso entità: /v0/entity/QUALCOSA/...
-        elseif (preg_match('#/v0/pages/([^/]+)/#', $path, $matches)) {
-            $currentSection = $matches[1]; // ricette, ingredienti, regioni, libri, ...
-        } else {
-            $currentSection = null;
         }
 
-        return $currentSection === $section ? 'active' : '';
+        return ($currentSection === $section) ? 'active' : '';
     }
+
 }
 ?>
 

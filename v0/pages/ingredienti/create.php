@@ -99,9 +99,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </p>
 
     <div class="form-actions">
-        <a
-            href="/CucinatiMaNonFritti95/v0/pages/ricette/dettaglio.php?numero=<?= $numeroRicetta ?>"
-            class="btn btn-undo">
+        <a href="/pages/ricette/dettaglio.php?numero=<?= $numeroRicetta ?>" class="btn btn-undo">
             Annulla
         </a>
         <button type="submit" class="btn btn-save">

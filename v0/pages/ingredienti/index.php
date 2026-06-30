@@ -7,20 +7,11 @@ include __DIR__ . '/../../interface/header.php';
 ========================= */
 
 $search = trim($_GET['search'] ?? '');
+$selectedLetters = $_GET['lettera'] ?? [];
 
-$selectedTipi = $_GET['tipo'] ?? [];
-$selectedOrigini = $_GET['origine'] ?? [];
-
-if (!is_array($selectedTipi)) $selectedTipi = [];
-if (!is_array($selectedOrigini)) $selectedOrigini = [];
-
-/* dati statici UI (non DB) */
-$tipi = [
-    "Verdura","Frutta","Carne","Pesce","Latticini",
-    "Cereali","Legumi","Spezie","Erbe aromatiche","Condimenti"
-];
-
-$origini = ["Vegetale","Animale","Minerale"];
+if (!is_array($selectedLetters)) {
+    $selectedLetters = [];
+}
 
 /* =========================
    QUERY BASE
@@ -42,72 +33,73 @@ if ($search !== '') {
     $params[] = "%$search%";
 }
 
-/* GROUP */
-$sql .= " GROUP BY ingrediente";
+/* LETTERA FILTRO */
+if (!empty($selectedLetters)) {
+    $in = implode(',', array_fill(0, count($selectedLetters), '?'));
+    $sql .= " AND UPPER(LEFT(ingrediente,1)) IN ($in)";
+    $params = array_merge($params, $selectedLetters);
+}
 
-/* ORDER */
-$sql .= " ORDER BY ingrediente ASC";
+/* GROUP + ORDER */
+$sql .= " GROUP BY ingrediente ORDER BY ingrediente ASC";
 
 $stmt = $pdo->prepare($sql);
 $stmt->execute($params);
 $ingredienti = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-$showFilters =
-    !empty($selectedTipi) ||
-    !empty($selectedOrigini);
+/* =========================
+   GRUPPO PER INIZIALE
+========================= */
+
+$grouped = [];
+
+foreach ($ingredienti as $ing) {
+    $lettera = strtoupper(substr($ing['ingrediente'], 0, 1));
+    $grouped[$lettera][] = $ing;
+}
+
+ksort($grouped);
+
+/* alfabeto */
+$alfabeto = range('A', 'Z');
 ?>
 
 <!-- =========================
-     FILTRI UI (INVARIATI)
+     FILTRI
 ========================= -->
 
 <form method="GET" class="filters">
 
+    <!-- TOP BAR -->
     <div class="filters-top">
 
-        <input
-            type="text"
-            name="search"
-            class="filters-input"
-            placeholder="Cerca ingrediente..."
-            value="<?= htmlspecialchars($search) ?>">
+        <input type="text"
+               name="search"
+               class="filters-input"
+               placeholder="Cerca ingrediente..."
+               value="<?= htmlspecialchars($search) ?>">
 
         <button type="button" id="toggleFilters" class="secondary-button">
-            <?= $showFilters ? 'Meno filtri' : 'Più filtri' ?>
+            Filtri avanzati
         </button>
 
     </div>
 
-    <div id="advancedFilters"
-         class="advanced-filters <?= $showFilters ? 'open' : '' ?>">
+    <!-- FILTRI AVANZATI -->
+    <div id="advancedFilters" class="alphabet-filter">
+        
+         <fieldset>
+            <legend>Lettera iniziale</legend>
 
-        <fieldset>
-            <legend>Origine</legend>
-
-            <div class="filter-group origine-group">
-                <?php foreach ($origini as $origine): ?>
-                    <label>
+				<div class="alphabet-bar">
+                <?php foreach ($alfabeto as $lettera): ?>
+                    <label class="lettera-item">
                         <input type="checkbox"
-                               name="origine[]"
-                               value="<?= htmlspecialchars($origine) ?>"
-                               <?= in_array($origine, $selectedOrigini) ? 'checked' : '' ?>>
-                        <?= htmlspecialchars($origine) ?>
-                    </label>
-                <?php endforeach; ?>
-            </div>
-        </fieldset>
+                               name="lettera[]"
+                               value="<?= $lettera ?>"
+                               <?= in_array($lettera, $selectedLetters) ? 'checked' : '' ?>>
 
-        <fieldset>
-            <legend>Tipologia</legend>
-
-            <div class="filter-group tipologia-ing-group">
-                <?php foreach ($tipi as $tipo): ?>
-                    <label>
-                        <input type="checkbox"
-                               name="tipo[]"
-                               value="<?= htmlspecialchars($tipo) ?>"
-                               <?= in_array($tipo, $selectedTipi) ? 'checked' : '' ?>>
-                        <?= htmlspecialchars($tipo) ?>
+                        <span><?= $lettera ?></span>
                     </label>
                 <?php endforeach; ?>
             </div>
@@ -115,6 +107,7 @@ $showFilters =
 
     </div>
 
+    <!-- AZIONI FUORI DAL TOGGLE -->
     <div class="filters-actions">
 
         <button type="submit" class="btn">Filtra</button>
@@ -126,43 +119,54 @@ $showFilters =
 </form>
 
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    const toggleBtn = document.getElementById('toggleFilters');
-    const filters = document.getElementById('advancedFilters');
-
-    toggleBtn.addEventListener('click', function () {
-        filters.classList.toggle('open');
-
-        toggleBtn.textContent =
-            filters.classList.contains('open')
-                ? 'Meno filtri'
-                : 'Più filtri';
-    });
+document.getElementById('toggleFilters').addEventListener('click', function () {
+    document.getElementById('advancedFilters').classList.toggle('open');
 });
 </script>
 
+<!-- =========================
+     OUTPUT
+========================= -->
+
 <h2>Elenco Ingredienti</h2>
+
 <div class="ingredienti-container">
 
-<?php foreach ($ingredienti as $ing): ?>
-    <?php $lettera = strtoupper(substr($ing['ingrediente'], 0, 1)); ?>
-    <div class="card">
-        <div class="card-body">
+<?php foreach ($grouped as $lettera => $lista): ?>
 
-            <h5 class="card-title">
-                <?= htmlspecialchars($ing['ingrediente']) ?>
-            </h5>
-
-            <p class="ingrediente-conteggio">
-                Usato in <strong><?= $ing['conteggio'] ?></strong> ricette
-            </p>
-
-            <a href="dettaglio.php?ingrediente=<?= urlencode($ing['ingrediente']) ?>"
-               class="card-button">
-                Vedi ingrediente
-            </a>
-        </div>
+    <div class="letter-header">
+        <?= $lettera ?>
     </div>
+
+    <div class="card-grid">
+
+        <?php foreach ($lista as $ing): ?>
+
+            <div class="card">
+
+                <div class="card-body">
+
+                    <h5 class="card-title">
+                        <?= htmlspecialchars($ing['ingrediente']) ?>
+                    </h5>
+
+                    <p>
+                        Usato in <strong><?= $ing['conteggio'] ?></strong> ricette
+                    </p>
+
+                    <a href="pages/ingredienti/dettaglio.php?ingrediente=<?= urlencode($ing['ingrediente']) ?>"
+                       class="card-button">
+                        Vedi ingrediente
+                    </a>
+
+                </div>
+
+            </div>
+
+        <?php endforeach; ?>
+
+    </div>
+
 <?php endforeach; ?>
 
 </div>

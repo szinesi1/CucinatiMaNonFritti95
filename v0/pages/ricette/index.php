@@ -27,47 +27,29 @@ if (!is_array($selectedTipi)) $selectedTipi = [];
 if (!is_array($selectedRegioni)) $selectedRegioni = [];
 
 /* =========================
-   QUERY BASE PDO
+   BASE CONDITIONS (GLOBALI)
 ========================= */
 
 $where = [];
 $params = [];
 
-/* ricerca titolo */
 if ($search !== '') {
-    $where[] = "titolo LIKE ?";
+    $where[] = "Ricette.titolo LIKE ?";
     $params[] = "%$search%";
 }
 
-/* filtro tipo multiplo */
-if (!empty($selectedTipi)) {
-    $in = implode(',', array_fill(0, count($selectedTipi), '?'));
-    $where[] = "tipo IN ($in)";
-    $params = array_merge($params, $selectedTipi);
-}
-
-/* filtro regione (JOIN su tabella relazione) */
+/* JOIN regione SOLO se serve */
 $joinRegione = '';
 if (!empty($selectedRegioni)) {
     $joinRegione = "
-        INNER JOIN ricettaRegionale rr ON rr.numeroRicetta = ricette.numero
-        INNER JOIN regioni r ON r.cod = rr.cod
+        INNER JOIN RicettaRegionale rr ON rr.numeroRicetta = Ricette.numero
+        INNER JOIN Regioni r ON r.cod = rr.cod
     ";
 
     $in = implode(',', array_fill(0, count($selectedRegioni), '?'));
     $where[] = "r.nome IN ($in)";
     $params = array_merge($params, $selectedRegioni);
 }
-
-/* WHERE finale */
-$whereSql = '';
-if (!empty($where)) {
-    $whereSql = "WHERE " . implode(" AND ", $where);
-}
-
-/* =========================
-   OUTPUT PER TIPO
-========================= */
 
 ?>
 
@@ -89,16 +71,18 @@ if (!empty($where)) {
     <div id="advancedFilters" class="advanced-filters">
         <fieldset>
             <legend>Tipologia</legend>
-
-            <?php foreach ($tipi as $key => $label): ?>
-                <label>
-                    <input type="checkbox"
-                           name="tipo[]"
-                           value="<?= $key ?>"
-                           <?= in_array($key, $selectedTipi) ? 'checked' : '' ?>>
-                    <?= $label ?>
-                </label>
-            <?php endforeach; ?>
+			<div class="alphabet-bar">
+                <?php foreach ($tipi as $key => $label): ?>
+                    <label class="check-ui">
+                        <input type="checkbox"
+                               name="tipo[]"
+                               class="check-box"
+                               value="<?= $key ?>"
+                            <?= in_array($key, $selectedTipi) ? 'checked' : '' ?>>
+                        <?= $label ?>
+                    </label>
+                <?php endforeach; ?>
+            </div>
         </fieldset>
     </div>
 
@@ -123,37 +107,46 @@ document.getElementById('toggleFilters').addEventListener('click', function () {
 
     <?php
     $sql = "
-        SELECT DISTINCT ricette.*
-        FROM ricette
+        SELECT DISTINCT Ricette.*
+        FROM Ricette
         $joinRegione
-        $whereSql
-        " . (!empty($selectedTipi) ? "" : " WHERE ricette.tipo = ? ") . "
-        ORDER BY titolo ASC
     ";
 
-    $stmt = $pdo->prepare($sql);
+    $conditions = $where;
+    $localParams = $params;
 
-    $finalParams = $params;
+    /* 👉 SEMPRE filtriamo per la categoria del loop */
+    $conditions[] = "Ricette.tipo = ?";
+    $localParams[] = $tipo;
 
-    /* se non hai filtro tipo, aggiungo il tipo della sezione */
-    if (empty($selectedTipi)) {
-        $finalParams[] = $tipo;
+    if (!empty($conditions)) {
+        $sql .= " WHERE " . implode(" AND ", $conditions);
     }
 
-    $stmt->execute($finalParams);
-    $ricette = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $sql .= " ORDER BY Ricette.titolo ASC";
+
+    try {
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute($localParams);
+        $ricette = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        echo "<pre>ERRORE SQL: " . $e->getMessage() . "</pre>";
+        continue;
+    }
     ?>
 
     <div class="card-grid">
 
+        <?php if (empty($ricette)): ?>
+            <p>Nessuna ricetta.</p>
+        <?php endif; ?>
+
         <?php foreach ($ricette as $r): ?>
 
             <?php
-            $img = "img/default.jpg";
-
-            if (!empty($r['immagine'])) {
-                $img = "img/ricette/" . $r['immagine'];
-            }
+            $img = !empty($r['immagine'])
+                ? "img/ricette/" . $r['immagine']
+                : "img/default.jpg";
             ?>
 
             <div class="card">

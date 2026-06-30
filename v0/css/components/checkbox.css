@@ -76,3 +76,52 @@
     font-size: 0.85rem;
     color: #666;
 }
+
+.alphabet-bar {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 6px;
+    width: 100%;
+}
+
+.lettera-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    min-width: 36px;
+    height: 34px;
+
+    padding: 4px 8px;
+
+    border: 1px solid var(--grey-light);
+    border-radius: 8px;
+    background: var(--off-white);
+
+    cursor: pointer;
+    user-select: none;
+    transition: 0.2s ease;
+}
+
+.lettera-item span {
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: var(--brown);
+}
+
+.lettera-item input {
+    display: none;
+}
+
+.lettera-item input:checked + span {
+    background: var(--sky-blue);
+    color: white;
+    border-radius: 6px;
+    padding: 4px 8px;
+}
+
+.lettera-item:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px var(--grey-shadow);
+}

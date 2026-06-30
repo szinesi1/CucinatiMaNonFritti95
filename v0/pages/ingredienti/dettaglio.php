@@ -76,7 +76,7 @@ $utilizzi = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     <li>
         <?= htmlspecialchars($u['quantita']) ?> —
-        <a href="../ricette/dettaglio.php?numero=<?= urlencode($ricetta['numero']) ?>">
+        <a href="pages/ricette/dettaglio.php?numero=<?= urlencode($ricetta['numero']) ?>">
             <?= htmlspecialchars($ricetta['titolo']) ?>
         </a>
     </li>
@@ -85,7 +85,7 @@ $utilizzi = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 </ul>
 
-<a href="../ingredienti/index.php" class="btn-category">
+<a href="pages/ingredienti/index.php" class="btn-category">
     ← Torna agli ingredienti
 </a>
 

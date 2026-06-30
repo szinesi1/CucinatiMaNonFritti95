@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="it">
-<base href="/CucinatiMaNonFritti95/v0/">
-
+<base href="/">
 <head>
     <meta charset="UTF-8">
     <title>Cucinati Ma Non Fritti 95</title>

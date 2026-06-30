@@ -78,8 +78,14 @@
 
 .advanced-filters.open {
     display: flex;
-    flex-direction: column;
     gap: 1rem;
+}
+
+.advanced-filters,
+.advanced-filters.open {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
 }
 
 /*****************************************/
@@ -90,6 +96,9 @@
     border: 2px solid var(--yellow-soft);
     border-radius: 12px;
     padding: .75rem;
+    min-width: 0;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .filters legend {
@@ -140,21 +149,19 @@
 /* tipologie ricette */
 .tipologie-group {
     display: flex;
-    flex-direction: column;
     gap: 6px;
 }
 
 /* regioni */
 .regioni-group {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+ /*   grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));*/
     gap: 6px;
 }
 
 /* origine / provenienza */
 .origine-group {
     display: flex;
-    flex-direction: column;
     gap: 6px;
 }
 
@@ -209,6 +216,22 @@
     background: #d6d8db;
 }
 
+/*****************************************/
+/************** INIZIALE *****************/
+/*****************************************/
+.alphabet-filter {
+    display: none;
+}
+
+.alphabet-filter.open {
+    display: block; /* IMPORTANTE: NON flex */
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.alphabet-filter fieldset {
+    width: 100%;
+}
 /*****************************************/
 /**************** DESKTOP ****************/
 /*****************************************/
