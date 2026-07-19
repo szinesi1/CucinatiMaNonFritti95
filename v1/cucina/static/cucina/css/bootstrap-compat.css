@@ -1,0 +1,55 @@
+/*
+ * Ponte di compatibilità con Bootstrap.
+ * Non introduce colori, spaziature o layout nuovi: neutralizza soltanto
+ * le regole Bootstrap che entrano in conflitto con i nomi delle classi
+ * già presenti nel progetto originale (.btn, .card, .carousel, .modal).
+ */
+
+*,
+*::before,
+*::after {
+    box-sizing: content-box;
+}
+
+.text-input,
+.advanced-filters,
+.advanced-filters.open,
+.filters fieldset,
+.alphabet-filter.open,
+.form-actions .btn,
+.form-actions .undo-button,
+.form-actions button,
+.form-actions a {
+    box-sizing: border-box;
+}
+
+.btn {
+    --bs-btn-border-width: 0;
+    --bs-btn-font-family: inherit;
+    --bs-btn-line-height: inherit;
+}
+
+.card {
+    color: inherit;
+}
+
+.carousel-inner {
+    overflow: visible;
+}
+
+.carousel-item,
+.carousel-item.active {
+    display: block;
+    float: none;
+    width: 100%;
+    margin-right: 0;
+    backface-visibility: visible;
+    transition: none;
+}
+
+.modal {
+    width: auto;
+    height: auto;
+    overflow: visible;
+    outline: initial;
+}

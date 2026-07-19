@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}Modifica ingrediente · Cucinati Ma Non Fritti 95{% endblock %}
+
+{% block content %}
+<h2>Modifica ingrediente</h2>
+
+<p class="recipe-title-edit">
+    <strong>Ricetta:</strong>
+    {{ recipe.title }}
+</p>
+
+<div class="edit-grid">
+
+    <!-- SINISTRA -->
+    <div class="edit-main">
+        <form method="post" id="editForm" novalidate>
+            {% csrf_token %}
+
+            <p>
+                Nome ingrediente<br>
+                {{ form.name }}
+                {{ form.name.errors }}
+            </p>
+
+            <p>
+                Quantità<br>
+                {{ form.quantity }}
+                {{ form.quantity.errors }}
+            </p>
+
+            <div class="form-actions">
+                <a href="{% url 'recipe_detail' recipe.number %}" class="btn btn-undo">
+                    Annulla
+                </a>
+
+                <button type="submit" class="btn btn-save">
+                    Salva
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- DESTRA -->
+    <div class="edit-side">
+        <label class="check-card">
+            <input type="checkbox" name="propagate" form="editForm">
+
+            <div class="check-ui">
+                <div class="check-box"></div>
+
+                <div class="check-text">
+                    <strong>Modifica globale</strong>
+                    <span>Applica il cambiamento a tutte le ricette</span>
+                </div>
+            </div>
+        </label>
+
+        <div class="side-box">
+            <h4>Presente anche in:</h4>
+
+            <ul>
+                {% for use in other_uses %}
+                    <li>{{ use.recipe.title }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

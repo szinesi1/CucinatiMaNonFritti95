@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block title %}Ingredienti · Cucinati Ma Non Fritti 95{% endblock %}
+
+{% block content %}
+<!-- =========================
+     FILTRI
+========================= -->
+
+<form method="GET" class="filters">
+
+    <!-- TOP BAR -->
+    <div class="filters-top">
+        <input type="text"
+               name="search"
+               class="filters-input"
+               placeholder="Cerca ingrediente..."
+               value="{{ search }}">
+
+        <button type="button" id="toggleFilters" class="secondary-button">
+            Filtri avanzati
+        </button>
+    </div>
+
+    <!-- FILTRI AVANZATI -->
+    <div id="advancedFilters" class="alphabet-filter">
+        <fieldset>
+            <legend>Lettera iniziale</legend>
+
+            <div class="alphabet-bar">
+                {% for letter in alphabet %}
+                    <label class="lettera-item">
+                        <input type="checkbox"
+                               name="lettera"
+                               value="{{ letter }}"
+                               {% if letter in selected_letters %}checked{% endif %}>
+                        <span>{{ letter }}</span>
+                    </label>
+                {% endfor %}
+            </div>
+        </fieldset>
+    </div>
+
+    <!-- AZIONI FUORI DAL TOGGLE -->
+    <div class="filters-actions">
+        <button type="submit" class="btn">Filtra</button>
+        <a href="{% url 'ingredient_list' %}" class="reset-button">Reset</a>
+    </div>
+
+</form>
+
+<!-- =========================
+     OUTPUT
+========================= -->
+
+<h2>Elenco Ingredienti</h2>
+
+<div class="ingredienti-container">
+{% for letter, ingredients in grouped %}
+    <div class="letter-header">{{ letter }}</div>
+
+    <div class="card-grid">
+        {% for ingredient in ingredients %}
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">{{ ingredient.name }}</h5>
+
+                    <p>
+                        Usato in <strong>{{ ingredient.count }}</strong> ricette
+                    </p>
+
+                    <a href="{% url 'ingredient_detail' ingredient.name %}"
+                       class="card-button">
+                        Vedi ingrediente
+                    </a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endfor %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.getElementById('toggleFilters').addEventListener('click', function () {
+    document.getElementById('advancedFilters').classList.toggle('open');
+});
+</script>
+{% endblock %}

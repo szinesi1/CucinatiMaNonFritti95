@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}{{ region.name }} · Cucinati Ma Non Fritti 95{% endblock %}
+
+{% block content %}
+<a href="{{ back_url }}" class="btn-back">
+    ← Torna indietro
+</a>
+
+<h2>{{ region.name }}</h2>
+
+<h3>Ricette della regione</h3>
+
+<ul>
+{% for link in links %}
+    <li>
+        <a href="{% url 'recipe_detail' link.recipe.number %}?from=regione&amp;cod={{ region.code }}">
+            {{ link.recipe.title }}
+        </a>
+    </li>
+{% empty %}
+    <li><em>Ricetta non trovata</em></li>
+{% endfor %}
+</ul>
+
+<a href="{% url 'region_list' %}" class="btn-category">
+    ← Torna alle regioni
+</a>
+{% endblock %}

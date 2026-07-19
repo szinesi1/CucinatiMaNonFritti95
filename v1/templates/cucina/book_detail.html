@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}{{ book.title }} · Cucinati Ma Non Fritti 95{% endblock %}
+
+{% block content %}
+<a href="{{ back_url }}" class="btn-back">
+    ← Torna indietro
+</a>
+
+<h2>{{ book.title }}</h2>
+
+<p>
+    <strong>Anno:</strong>
+    {{ book.year }}
+</p>
+
+<h3>Ricette presenti nel libro</h3>
+
+<ul>
+{% for publication in publications %}
+    <li>
+        Pagina {{ publication.page_number }} —
+        <a href="{% url 'recipe_detail' publication.recipe.number %}?from=libro&amp;isbn={{ book.isbn }}">
+            {{ publication.recipe.title }}
+        </a>
+    </li>
+{% empty %}
+    <li><em>Ricetta non trovata</em></li>
+{% endfor %}
+</ul>
+
+<a href="{% url 'book_list' %}" class="btn-category">
+    ← Torna ai libri
+</a>
+{% endblock %}

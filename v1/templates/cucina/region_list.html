@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}Regioni · Cucinati Ma Non Fritti 95{% endblock %}
+
+{% block content %}
+<!-- =========================
+     FILTRI (STILE UGUALE RICETTE)
+========================= -->
+
+<form method="GET" class="filters">
+
+    <div class="filters-top">
+        <input type="text"
+               name="search"
+               class="filters-input"
+               placeholder="Cerca regione..."
+               value="{{ search }}">
+
+        <button type="button" id="toggleFilters" class="secondary-button">
+            Filtri
+        </button>
+    </div>
+
+    <div id="advancedFilters" class="advanced-filters">
+        <fieldset>
+            <legend>Zona geografica</legend>
+            <div class="alphabet-bar">
+                {% for zone in zones %}
+                    <label class="check-ui">
+                        <input type="checkbox"
+                               name="zona"
+                               class="check-box"
+                               value="{{ zone }}"
+                               {% if zone in selected_zones %}checked{% endif %}>
+                        {{ zone }}
+                    </label>
+                {% endfor %}
+            </div>
+        </fieldset>
+    </div>
+
+    <div class="filters-actions">
+        <button type="submit" class="btn">Filtra</button>
+        <a href="{% url 'region_list' %}" class="reset-button">Reset</a>
+    </div>
+
+</form>
+
+<h2>Regioni italiane</h2>
+
+<!-- =========================
+     GRID CARD (STILE RICETTE)
+========================= -->
+
+<div class="card-grid">
+{% for region in regions %}
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">{{ region.name }}</h5>
+
+            <p class="card-text">Zona: {{ region.zone }}</p>
+
+            <p class="card-text">{{ region.recipe_count }} ricette</p>
+
+            <a href="{% url 'region_detail' region.code %}"
+               class="card-button">
+                Visualizza
+            </a>
+        </div>
+    </div>
+{% endfor %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.getElementById('toggleFilters').addEventListener('click', function () {
+    document.getElementById('advancedFilters').classList.toggle('open');
+});
+</script>
+{% endblock %}

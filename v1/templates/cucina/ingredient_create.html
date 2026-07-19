@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Nuovo ingrediente · Cucinati Ma Non Fritti 95{% endblock %}
+
+{% block content %}
+<h2>
+    Nuovo ingrediente per la ricetta:
+    {{ recipe.title }}
+</h2>
+
+<form method="post" novalidate>
+    {% csrf_token %}
+
+    <p>
+        <label for="ingrediente">Nome ingrediente</label><br>
+        {{ form.name }}
+        {{ form.name.errors }}
+    </p>
+
+    <p>
+        <label for="quantita">Quantità</label><br>
+        {{ form.quantity }}
+        {{ form.quantity.errors }}
+    </p>
+
+    <div class="form-actions">
+        <a href="{% url 'recipe_detail' recipe.number %}" class="btn btn-undo">
+            Annulla
+        </a>
+        <button type="submit" class="btn btn-save">
+            Salva
+        </button>
+    </div>
+</form>
+{% endblock %}

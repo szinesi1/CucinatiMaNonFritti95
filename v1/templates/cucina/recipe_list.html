@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Ricette · Cucinati Ma Non Fritti 95{% endblock %}
+
+{% block content %}
+<!-- FILTRI UI -->
+<form method="GET" class="filters">
+
+    <div class="filters-top">
+        <input type="text"
+               name="search"
+               class="filters-input"
+               placeholder="Cerca ricetta..."
+               value="{{ search }}">
+
+        <button type="button" id="toggleFilters" class="secondary-button">
+            Filtri
+        </button>
+    </div>
+
+    <div id="advancedFilters" class="advanced-filters">
+        <fieldset>
+            <legend>Tipologia</legend>
+            <div class="alphabet-bar">
+                {% for key, label in recipe_types %}
+                    <label class="check-ui">
+                        <input type="checkbox"
+                               name="tipo"
+                               class="check-box"
+                               value="{{ key }}"
+                               {% if key in selected_types %}checked{% endif %}>
+                        {{ label }}
+                    </label>
+                {% endfor %}
+            </div>
+        </fieldset>
+    </div>
+
+    <div class="filters-actions">
+        <button type="submit" class="btn">Filtra</button>
+        <a href="{% url 'recipe_list' %}" class="reset-button">Reset</a>
+    </div>
+
+</form>
+
+<h2>Ricette per tipologia</h2>
+
+{% for section in sections %}
+    <h3>{{ section.label }}</h3>
+
+    <div class="card-grid">
+        {% for recipe in section.recipes %}
+            <div class="card">
+                {% if recipe.image %}
+                    <img src="{% static 'cucina/img/ricette/' %}{{ recipe.image }}"
+                         alt="{{ recipe.title }}">
+                {% else %}
+                    <img src="{% static 'cucina/img/default.jpg' %}"
+                         alt="{{ recipe.title }}">
+                {% endif %}
+
+                <div class="card-body">
+                    <h5 class="card-title">{{ recipe.title }}</h5>
+
+                    <a href="{% url 'recipe_detail' recipe.number %}"
+                       class="card-button">
+                        Vedi ricetta
+                    </a>
+                </div>
+            </div>
+        {% empty %}
+            <p>Nessuna ricetta.</p>
+        {% endfor %}
+    </div>
+{% endfor %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.getElementById('toggleFilters').addEventListener('click', function () {
+    document.getElementById('advancedFilters').classList.toggle('open');
+});
+</script>
+{% endblock %}

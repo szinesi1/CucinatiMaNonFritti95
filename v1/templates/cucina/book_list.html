@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}Libri · Cucinati Ma Non Fritti 95{% endblock %}
+
+{% block content %}
+<!-- =========================
+     FILTRI UI
+========================= -->
+
+<form method="GET" class="filters">
+
+    <div class="filters-top">
+        <input type="text"
+               name="titolo"
+               class="filters-input"
+               placeholder="Cerca titolo..."
+               value="{{ title_filter }}">
+
+        <button type="button" id="toggleFilters" class="secondary-button">
+            {% if show_filters %}Meno filtri{% else %}Più filtri{% endif %}
+        </button>
+    </div>
+
+    <div id="advancedFilters"
+         class="advanced-filters {% if show_filters %}open{% endif %}">
+
+        <div class="filter-group">
+            <input type="number"
+                   name="anno"
+                   class="filters-input2"
+                   placeholder="Anno"
+                   value="{{ year_filter }}">
+
+            <input type="text"
+                   name="isbn"
+                   class="filters-input2"
+                   placeholder="ISBN"
+                   value="{{ isbn_filter }}">
+        </div>
+    </div>
+
+    <div class="filters-actions">
+        <button type="submit" class="btn">Filtra</button>
+        <a href="{% url 'book_list' %}" class="reset-button">Reset</a>
+    </div>
+
+</form>
+
+<h2>Elenco Libri</h2>
+
+<table class="table-libri">
+<tr>
+    <th>Titolo</th>
+    <th>Anno</th>
+    <th>Pagine</th>
+    <th>Ricette nel libro</th>
+</tr>
+
+{% for book in books %}
+<tr>
+    <td>
+        <a href="{% url 'book_detail' book.isbn %}">
+            {{ book.title }}
+        </a>
+    </td>
+
+    <td>{{ book.year }}</td>
+    <td>{{ book.page_count|default:0 }}</td>
+    <td>{{ book.recipe_count }}</td>
+</tr>
+{% endfor %}
+</table>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const btn = document.getElementById('toggleFilters');
+    const panel = document.getElementById('advancedFilters');
+
+    btn.addEventListener('click', function () {
+        panel.classList.toggle('open');
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}{{ ingredient_name }} · Cucinati Ma Non Fritti 95{% endblock %}
+
+{% block content %}
+<a href="{{ back_url }}" class="btn-back">
+    ← Torna indietro
+</a>
+
+<h2>{{ ingredient_name }}</h2>
+
+<h3>Ricette che usano questo ingrediente</h3>
+
+<ul>
+{% for use in uses %}
+    <li>
+        {{ use.quantity }} —
+        <a href="{% url 'recipe_detail' use.recipe.number %}">
+            {{ use.recipe.title }}
+        </a>
+    </li>
+{% endfor %}
+</ul>
+
+<a href="{% url 'ingredient_list' %}" class="btn-category">
+    ← Torna agli ingredienti
+</a>
+{% endblock %}
