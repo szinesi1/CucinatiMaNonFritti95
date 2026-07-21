@@ -69,6 +69,7 @@ Aprire il terminale nella cartella del progetto ed eseguire:
 chmod +x avvia.sh
 ./avvia.sh
 ```
+<<<<<<< HEAD
 
 Al termine aprire nel browser:
 
@@ -232,3 +233,5 @@ http://127.0.0.1:8000/
 ```
 
 Non chiudere il terminale mentre il sito è in uso.
+=======
+>>>>>>> 5df8f3ac832b6d9f2552a4a761eba4f407b44aba
