@@ -1,8 +1,0 @@
-/.metadata/
-/.sonarlint/
-.venv/
-__pycache__/
-*.py[cod]
-.env
-staticfiles/
-.DS_Store

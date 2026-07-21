@@ -256,7 +256,7 @@
     background: var(--btn-delete-dark);
 }
 
-/*** FORZA DIMENSIONI in crud.css ***/
+/* Le dimensioni dei pulsanti del form sono definite in crud.css. */
 
 .btn-save {
     background: var(--btn-save);

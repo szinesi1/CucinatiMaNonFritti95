@@ -5,42 +5,56 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}Cucinati Ma Non Fritti 95{% endblock %}</title>
-
-    <!-- Bootstrap è caricato prima: il CSS originale conserva l'aspetto del progetto. -->
     <link rel="stylesheet" href="{% static 'cucina/librerie/bootstrap/css/bootstrap.min.css' %}">
     <link rel="stylesheet" href="{% static 'cucina/css/style.css' %}">
     <link rel="stylesheet" href="{% static 'cucina/css/compatibilita-bootstrap.css' %}">
 </head>
 <body class="d-flex flex-column min-vh-100">
 <header class="top-header">
-    <h1>Cucinati Ma Non Fritti</h1>
+    <h1><a href="{% url 'home' %}">Cucinati Ma Non Fritti</a></h1>
 </header>
 
 <div class="layout flex-grow-1">
-
-    <!-- Navigazione principale -->
-    <aside class="sidebar">
-        <nav class="nav-vertical">
-            <ul>
-                <li><a class="{% if active_section == 'home' %}active{% endif %}" href="{% url 'home' %}">Home</a></li>
-                <li><a class="{% if active_section == 'ricette' %}active{% endif %}" href="{% url 'recipe_list' %}">Ricette</a></li>
-                <li><a class="{% if active_section == 'ingredienti' %}active{% endif %}" href="{% url 'ingredient_list' %}">Ingredienti</a></li>
-                <li><a class="{% if active_section == 'regioni' %}active{% endif %}" href="{% url 'region_list' %}">Regioni</a></li>
-                <li><a class="{% if active_section == 'libri' %}active{% endif %}" href="{% url 'book_list' %}">Libri</a></li>
-            </ul>
-        </nav>
+    <aside class="filter-sidebar">
+        <div class="filter-panel">
+            <h2 class="sidebar-heading">Filtro / Ricerca</h2>
+            {% block filters %}
+            <form method="GET" action="{% url 'recipe_list' %}" class="filters sidebar-filters">
+                <div class="filters-top">
+                    <input type="text" name="search" class="filters-input" placeholder="Cerca ricetta...">
+                </div>
+                <div class="filters-actions">
+                    <button type="submit" class="btn">Cerca</button>
+                </div>
+            </form>
+            {% endblock %}
+        </div>
     </aside>
 
-    <!-- Contenuto della pagina -->
     <main class="content">
         {% block content %}{% endblock %}
     </main>
+
+    <aside class="sidebar nav-sidebar">
+        <div class="nav-panel">
+            <h2 class="sidebar-heading">Navigazione</h2>
+            <nav class="nav-vertical" aria-label="Navigazione principale">
+                <ul>
+                    <li><a class="{% if active_section == 'home' %}active{% endif %}" href="{% url 'home' %}">Home</a></li>
+                    <li><a class="{% if active_section == 'ricette' %}active{% endif %}" href="{% url 'recipe_list' %}">Ricette</a></li>
+                    <li><a class="{% if active_section == 'ingredienti' %}active{% endif %}" href="{% url 'ingredient_list' %}">Ingredienti</a></li>
+                    <li><a class="{% if active_section == 'regioni' %}active{% endif %}" href="{% url 'region_list' %}">Regioni</a></li>
+                    <li><a class="{% if active_section == 'libri' %}active{% endif %}" href="{% url 'book_list' %}">Libri</a></li>
+                </ul>
+            </nav>
+        </div>
+    </aside>
 </div>
 
 <footer class="footer">
-     <p>&copy; 2026 CucinatiMaNonFritti95</p>
-     <p>Tutte le ricette sono a scopo dimostrativo.</p>
-     <p>Progetto del corso di Programmazione Web - A.A. 2025/2026</p>
+    <p>&copy; 2026 CucinatiMaNonFritti95</p>
+    <p>Tutte le ricette sono a scopo dimostrativo.</p>
+    <p>Progetto del corso di Programmazione Web - A.A. 2025/2026</p>
 </footer>
 
 <script src="{% static 'cucina/librerie/bootstrap/js/bootstrap.bundle.min.js' %}"></script>

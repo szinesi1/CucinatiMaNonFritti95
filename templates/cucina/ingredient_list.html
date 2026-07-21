@@ -2,14 +2,8 @@
 
 {% block title %}Ingredienti · Cucinati Ma Non Fritti 95{% endblock %}
 
-{% block content %}
-<!-- =========================
-     FILTRI
-========================= -->
-
-<form method="GET" class="filters">
-
-    <!-- TOP BAR -->
+{% block filters %}
+<form method="GET" class="filters sidebar-filters">
     <div class="filters-top">
         <input type="text"
                name="search"
@@ -22,8 +16,7 @@
         </button>
     </div>
 
-    <!-- FILTRI AVANZATI -->
-    <div id="advancedFilters" class="alphabet-filter">
+    <div id="advancedFilters" class="alphabet-filter {% if selected_letters %}open{% endif %}">
         <fieldset>
             <legend>Lettera iniziale</legend>
 
@@ -41,18 +34,14 @@
         </fieldset>
     </div>
 
-    <!-- AZIONI FUORI DAL TOGGLE -->
     <div class="filters-actions">
         <button type="submit" class="btn">Filtra</button>
         <a href="{% url 'ingredient_list' %}" class="reset-button">Reset</a>
     </div>
-
 </form>
+{% endblock %}
 
-<!-- =========================
-     OUTPUT
-========================= -->
-
+{% block content %}
 <h2>Elenco Ingredienti</h2>
 
 <div class="ingredienti-container">
@@ -83,8 +72,12 @@
 
 {% block scripts %}
 <script>
-document.getElementById('toggleFilters').addEventListener('click', function () {
-    document.getElementById('advancedFilters').classList.toggle('open');
-});
+const ingredientFilterButton = document.getElementById('toggleFilters');
+const ingredientFilterPanel = document.getElementById('advancedFilters');
+if (ingredientFilterButton && ingredientFilterPanel) {
+    ingredientFilterButton.addEventListener('click', function () {
+        ingredientFilterPanel.classList.toggle('open');
+    });
+}
 </script>
 {% endblock %}

@@ -2,13 +2,8 @@
 
 {% block title %}Regioni · Cucinati Ma Non Fritti 95{% endblock %}
 
-{% block content %}
-<!-- =========================
-     FILTRI (STILE UGUALE RICETTE)
-========================= -->
-
-<form method="GET" class="filters">
-
+{% block filters %}
+<form method="GET" class="filters sidebar-filters">
     <div class="filters-top">
         <input type="text"
                name="search"
@@ -21,7 +16,7 @@
         </button>
     </div>
 
-    <div id="advancedFilters" class="advanced-filters">
+    <div id="advancedFilters" class="advanced-filters {% if selected_zones %}open{% endif %}">
         <fieldset>
             <legend>Zona geografica</legend>
             <div class="alphabet-bar">
@@ -43,14 +38,11 @@
         <button type="submit" class="btn">Filtra</button>
         <a href="{% url 'region_list' %}" class="reset-button">Reset</a>
     </div>
-
 </form>
+{% endblock %}
 
+{% block content %}
 <h2>Regioni italiane</h2>
-
-<!-- =========================
-     GRID CARD (STILE RICETTE)
-========================= -->
 
 <div class="card-grid">
 {% for region in regions %}
@@ -59,7 +51,6 @@
             <h5 class="card-title">{{ region.name }}</h5>
 
             <p class="card-text">Zona: {{ region.zone }}</p>
-
             <p class="card-text">{{ region.recipe_count }} ricette</p>
 
             <a href="{% url 'region_detail' region.code %}"
@@ -74,8 +65,12 @@
 
 {% block scripts %}
 <script>
-document.getElementById('toggleFilters').addEventListener('click', function () {
-    document.getElementById('advancedFilters').classList.toggle('open');
-});
+const regionFilterButton = document.getElementById('toggleFilters');
+const regionFilterPanel = document.getElementById('advancedFilters');
+if (regionFilterButton && regionFilterPanel) {
+    regionFilterButton.addEventListener('click', function () {
+        regionFilterPanel.classList.toggle('open');
+    });
+}
 </script>
 {% endblock %}

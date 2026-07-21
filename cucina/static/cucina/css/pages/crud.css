@@ -111,7 +111,7 @@
     background: var(--sky-blue);
 }
 
-/* IMPORTANTISSIMO: fix click totale */
+/* Rende cliccabile l’intera scheda. */
 .check-card,
 .check-card * {
     cursor: pointer;
