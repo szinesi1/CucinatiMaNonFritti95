@@ -3,8 +3,10 @@
 
 {% block title %}Ricette · Cucinati Ma Non Fritti 95{% endblock %}
 
-{% block filters %}
-<form method="GET" class="filters sidebar-filters">
+{% block content %}
+<!-- FILTRI UI -->
+<form method="GET" class="filters">
+
     <div class="filters-top">
         <input type="text"
                name="search"
@@ -17,7 +19,7 @@
         </button>
     </div>
 
-    <div id="advancedFilters" class="advanced-filters {% if selected_types %}open{% endif %}">
+    <div id="advancedFilters" class="advanced-filters">
         <fieldset>
             <legend>Tipologia</legend>
             <div class="alphabet-bar">
@@ -39,10 +41,9 @@
         <button type="submit" class="btn">Filtra</button>
         <a href="{% url 'recipe_list' %}" class="reset-button">Reset</a>
     </div>
-</form>
-{% endblock %}
 
-{% block content %}
+</form>
+
 <h2>Ricette per tipologia</h2>
 
 {% for section in sections %}
@@ -77,12 +78,8 @@
 
 {% block scripts %}
 <script>
-const recipeFilterButton = document.getElementById('toggleFilters');
-const recipeFilterPanel = document.getElementById('advancedFilters');
-if (recipeFilterButton && recipeFilterPanel) {
-    recipeFilterButton.addEventListener('click', function () {
-        recipeFilterPanel.classList.toggle('open');
-    });
-}
+document.getElementById('toggleFilters').addEventListener('click', function () {
+    document.getElementById('advancedFilters').classList.toggle('open');
+});
 </script>
 {% endblock %}
