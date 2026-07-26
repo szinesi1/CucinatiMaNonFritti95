@@ -2,7 +2,6 @@
 
 from django.db import models
 
-
 class Recipe(models.Model):
     TYPE_CHOICES = [
         ("antipasto", "Antipasto"),
@@ -24,7 +23,6 @@ class Recipe(models.Model):
     def __str__(self) -> str:
         return self.title
 
-
 class Ingredient(models.Model):
     id = models.AutoField(primary_key=True, db_column="idIngrediente")
     recipe = models.ForeignKey(
@@ -44,7 +42,6 @@ class Ingredient(models.Model):
     def __str__(self) -> str:
         return f"{self.name} ({self.recipe})"
 
-
 class Book(models.Model):
     isbn = models.CharField(max_length=20, primary_key=True, db_column="codISBN")
     title = models.CharField(max_length=255, db_column="titolo")
@@ -56,7 +53,6 @@ class Book(models.Model):
 
     def __str__(self) -> str:
         return self.title
-
 
 class Publication(models.Model):
     book = models.ForeignKey(
@@ -86,7 +82,6 @@ class Publication(models.Model):
     def __str__(self) -> str:
         return f"{self.book} - p. {self.page_number}"
 
-
 class Region(models.Model):
     code = models.CharField(max_length=3, primary_key=True, db_column="cod")
     name = models.CharField(max_length=100, db_column="nome")
@@ -98,7 +93,6 @@ class Region(models.Model):
 
     def __str__(self) -> str:
         return self.name
-
 
 class RegionalRecipe(models.Model):
     region = models.ForeignKey(

@@ -17,18 +17,15 @@ DEPENDENCIES_DIR = PROJECT_DIR / "dipendenze"
 REQUIREMENTS_FILE = PROJECT_DIR / "requirements.txt"
 MANAGE_FILE = PROJECT_DIR / "manage.py"
 
-
 def run(command: list[str]) -> None:
     """Esegue un comando dalla cartella principale del progetto."""
     subprocess.run(command, cwd=PROJECT_DIR, check=True)
-
 
 def venv_python() -> Path:
     """Restituisce il percorso di Python nell'ambiente virtuale."""
     if sys.platform == "win32":
         return VENV_DIR / "Scripts" / "python.exe"
     return VENV_DIR / "bin" / "python"
-
 
 def python_version(python_executable: Path) -> str | None:
     """Legge la versione principale e secondaria di un interprete Python."""
@@ -47,7 +44,6 @@ def python_version(python_executable: Path) -> str | None:
     except (OSError, subprocess.CalledProcessError):
         return None
     return result.stdout.strip()
-
 
 def check_project_files() -> bool:
     """Controlla che lo ZIP sia stato estratto completamente."""
@@ -69,7 +65,6 @@ def check_project_files() -> bool:
     print("Estrarre nuovamente tutto il contenuto dello ZIP.")
     return False
 
-
 def main() -> int:
     if sys.version_info[:2] != (3, 12):
         print("ERRORE: il progetto deve essere avviato con Python 3.12.")
@@ -83,7 +78,6 @@ def main() -> int:
 
     python_in_venv = venv_python()
 
-    # Un ambiente creato con un'altra versione di Python non è riutilizzabile.
     if VENV_DIR.exists() and python_version(python_in_venv) != "3.12":
         print("Ricreazione dell'ambiente virtuale...")
         shutil.rmtree(VENV_DIR)
@@ -129,7 +123,6 @@ def main() -> int:
         print("\nServer arrestato.")
 
     return 0
-
 
 if __name__ == "__main__":
     raise SystemExit(main())

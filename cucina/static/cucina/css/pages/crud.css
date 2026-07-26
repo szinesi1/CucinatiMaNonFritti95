@@ -41,11 +41,6 @@
     -webkit-appearance: none;
 }
 
-/************* EDIT ****************/
-/* =========================
-   LAYOUT 2 COLONNE
-========================= */
-
 .edit-grid {
     display: grid;
     grid-template-columns: 3fr 2fr;
@@ -61,10 +56,6 @@
     box-shadow: 0 4px 12px var(--grey-shadow);
 }
 
-/* =========================
-   SIDE BOX
-========================= */
-
 .side-box {
     margin-top: 15px;
     padding: 12px;
@@ -76,10 +67,6 @@
     margin: 0;
     padding-left: 18px;
 }
-
-/* =========================
-   CHECKBOX MODERNA (FIX CLICK)
-========================= */
 
 .check-card {
     display: block;
@@ -111,15 +98,10 @@
     background: var(--sky-blue);
 }
 
-/* IMPORTANTISSIMO: fix click totale */
 .check-card,
 .check-card * {
     cursor: pointer;
 }
-
-/* =========================
-   FORM ACTIONS
-========================= */
 
 .form-actions {
     display: flex;

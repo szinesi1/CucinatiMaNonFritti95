@@ -3,33 +3,40 @@
 {% block title %}{{ book.title }} · Cucinati Ma Non Fritti 95{% endblock %}
 
 {% block content %}
-<a href="{{ back_url }}" class="btn-back">
-    ← Torna indietro
-</a>
+<a href="{{ back_url }}" class="btn-back">← Torna all'elenco dei libri</a>
 
-<h2>{{ book.title }}</h2>
+<div class="book-detail-heading">
+    <div>
+        <h2>{{ book.title }}</h2>
+        <p><strong>Anno:</strong> {{ book.year }}</p>
+        <p><strong>ISBN catalogo:</strong> {{ book.isbn }}</p>
+    </div>
+    <div class="book-summary" aria-label="Dati del libro">
+        <span><strong>{{ recipe_count }}</strong> ricette</span>
+        <span><strong>{{ page_count }}</strong> pagine catalogate</span>
+    </div>
+</div>
 
-<p>
-    <strong>Anno:</strong>
-    {{ book.year }}
+<p class="book-note">
+    Questa raccolta comprende una selezione coerente di ricette. Non tutti i libri contengono tutte le ricette:
+    la raccolta generale contiene l'intero archivio, mentre gli altri volumi sono organizzati per portata o area geografica.
+    Il numero di pagine viene calcolato in base alle ricette effettivamente presenti nel volume.
 </p>
 
 <h3>Ricette presenti nel libro</h3>
 
-<ul>
+<ul class="publication-list">
 {% for publication in publications %}
     <li>
-        Pagina {{ publication.page_number }} —
-        <a href="{% url 'recipe_detail' publication.recipe.number %}?from=libro&amp;isbn={{ book.isbn }}">
+        <span>Pagina {{ publication.page_number }}</span>
+        <a href="{% url 'recipe_detail' publication.recipe.number %}">
             {{ publication.recipe.title }}
         </a>
     </li>
 {% empty %}
-    <li><em>Ricetta non trovata</em></li>
+    <li><em>Nessuna ricetta associata.</em></li>
 {% endfor %}
 </ul>
 
-<a href="{% url 'book_list' %}" class="btn-category">
-    ← Torna ai libri
-</a>
+{% include "cucina/pagination.html" %}
 {% endblock %}

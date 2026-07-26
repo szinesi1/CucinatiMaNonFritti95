@@ -1,9 +1,3 @@
-/*****************************************/
-/**************** BOTTONI ****************/
-/*****************************************/
-
-/************* BOTTONE GENERICO **********/
-
 .btn {
     display: inline-flex;
     align-items: center;
@@ -49,10 +43,6 @@
     box-shadow: 0 4px 8px rgba(0,0,0,.18);
 }
 
-/*****************************************/
-/************ PIÙ/MENO FILTRI ************/
-/*****************************************/
-
 .secondary-button {
     display: flex;
     align-items: center;
@@ -77,10 +67,6 @@
     transform: translateY(-2px);
 }
 
-/*****************************************/
-/************** FILTRA *******************/
-/*****************************************/
-
 .filters button[type="submit"] {
     background: var(--colore-header-bg);
     color: white;
@@ -97,10 +83,6 @@
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(0,0,0,.18);
 }
-
-/*****************************************/
-/*************** RESET *******************/
-/*****************************************/
 
 .reset-button {
     display: inline-flex;
@@ -123,10 +105,6 @@
     box-shadow: 0 4px 8px rgba(0,0,0,.18);
 }
 
-/*****************************************/
-/************** CARD BUTTON **************/
-/*****************************************/
-
 .card-button {
     display: inline-block;
     margin-top: 10px;
@@ -142,10 +120,6 @@
     background: var(--colore-btn-hover);
     transform: translateY(-2px);
 }
-
-/*****************************************/
-/************** TORNA INDIETRO ***********/
-/*****************************************/
 
 .btn-back {
     display: inline-block;
@@ -164,10 +138,6 @@
     transform: translateY(-2px);
 }
 
-/*****************************************/
-/*********** TORNA CATEGORIA *************/
-/*****************************************/
-
 .btn-category {
     display: inline-block;
     margin-top: 40px;
@@ -183,10 +153,6 @@
     background: var(--colore-sidebar-hover);
     transform: translateY(-2px);
 }
-
-/*****************************************/
-/************* CAROSELLO *****************/
-/*****************************************/
 
 .carousel-control {
     position: absolute;
@@ -214,12 +180,6 @@
     background: var(--colore-carousel-btn-hover);
 }
 
-/*****************************************/
-/************** BOTTONI CRUD **************/
-/*****************************************/
-
-/*************** MODIFICA *****************/
-
 .btn-edit{
     background: var(--btn-edit-light);
     border: 1px solid var(--btn-edit);
@@ -230,8 +190,6 @@
     background: var(--btn-edit);
     color: var(--white);
 }
-
-/**************** AGGIUNGI ****************/
 
 .btn-add{
     background: var(--btn-add-light);
@@ -244,8 +202,6 @@
     color: var(--white);
 }
 
-/**************** ELIMINA *****************/
-
 .btn-delete{
     background: var(--btn-delete);
     border: 1px solid var(--btn-delete-dark);
@@ -255,8 +211,6 @@
 .btn-delete:hover{
     background: var(--btn-delete-dark);
 }
-
-/*** FORZA DIMENSIONI in crud.css ***/
 
 .btn-save {
     background: var(--btn-save);
@@ -270,10 +224,6 @@
     color: var(--white);
 }
 
-/*****************************************/
-/************* AZIONI CRUD ***************/
-/*****************************************/
-
 .ingredient-actions{
     display:flex;
     align-items:center;
@@ -283,4 +233,48 @@
 
 .divider{
     display:none;
+}
+.compact-button {
+    margin-top: 0;
+    padding: 7px 11px;
+    white-space: nowrap;
+}
+
+.reset-button {
+    background: transparent !important;
+    border: 1px solid var(--spring-green);
+    color: var(--spring-green);
+}
+
+.reset-button:hover {
+    background: var(--yellow-soft) !important;
+    color: var(--sky-blue-dark);
+}
+
+.btn-edit,
+.btn-delete {
+    padding: 6px 9px;
+    border-radius: 4px;
+    background: transparent;
+    box-shadow: none;
+}
+
+.btn-edit {
+    border-color: var(--spring-green);
+    color: var(--spring-green);
+}
+
+.btn-delete {
+    border-color: var(--btn-delete);
+    color: var(--btn-delete);
+}
+
+.btn-edit:hover {
+    background: var(--yellow-soft);
+    color: var(--sky-blue-dark);
+}
+
+.btn-delete:hover {
+    background: #f7eded;
+    color: var(--btn-delete-dark);
 }

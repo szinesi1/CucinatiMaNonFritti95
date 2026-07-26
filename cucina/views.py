@@ -1,10 +1,10 @@
 """View dell'applicazione: ricerca, filtri e operazioni CRUD sugli ingredienti."""
 
 from collections import OrderedDict
-from urllib.parse import urlencode
 
 from django.db import transaction
-from django.db.models import Count, Max, Q
+from django.core.paginator import Paginator
+from django.db.models import Count, Exists, Max, OuterRef, Q
 from django.http import HttpRequest, HttpResponse, HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -12,7 +12,6 @@ from django.utils.http import url_has_allowed_host_and_scheme
 
 from .forms import IngredientCreateForm, IngredientEditForm
 from .models import Book, Ingredient, Publication, Recipe, Region, RegionalRecipe
-
 
 RECIPE_TYPES = OrderedDict(
     [
@@ -26,39 +25,137 @@ RECIPE_TYPES = OrderedDict(
 ZONES = ["Nord", "Centro", "Sud", "Isole"]
 ALPHABET = [chr(code) for code in range(ord("A"), ord("Z") + 1)]
 
-
-def _safe_referer(request: HttpRequest, fallback: str) -> str:
-    """Restituisce la pagina precedente solo se appartiene allo stesso sito."""
-    referer = request.META.get("HTTP_REFERER", "")
-    if referer and url_has_allowed_host_and_scheme(
-        referer,
+def _safe_url(request: HttpRequest, candidate: str, fallback: str) -> str:
+    """Accetta un URL di ritorno solo quando appartiene allo stesso sito."""
+    if candidate and url_has_allowed_host_and_scheme(
+        candidate,
         allowed_hosts={request.get_host()},
         require_https=request.is_secure(),
     ):
-        return referer
+        return candidate
     return fallback
 
+def _safe_referer(request: HttpRequest, fallback: str) -> str:
+    """Usa il referer solo come compatibilità con i vecchi collegamenti."""
+    return _safe_url(request, request.META.get("HTTP_REFERER", ""), fallback)
+
+def _non_negative_int(value: str) -> int | None:
+    """Converte un valore numerico del filtro; i valori vuoti o errati vengono ignorati."""
+    try:
+        number = int(value)
+    except (TypeError, ValueError):
+        return None
+    return number if number >= 0 else None
 
 def home(request: HttpRequest) -> HttpResponse:
     return render(request, "cucina/home.html", {"active_section": "home"})
 
+def _session_filters(request: HttpRequest, key: str, defaults: dict) -> dict:
+    """Memorizza i filtri inviati via POST senza inserirli nella URL."""
+    if request.method == "POST" and request.POST.get("form_action") not in {"clear", "paginate"}:
+        values = {}
+        for name, default in defaults.items():
+            if isinstance(default, list):
+                values[name] = [value.strip() for value in request.POST.getlist(name) if value.strip()]
+            else:
+                values[name] = request.POST.get(name, default).strip()
+        request.session[key] = values
+    stored = request.session.get(key, {})
+    return {name: stored.get(name, default) for name, default in defaults.items()}
+
+def _clear_filters(request: HttpRequest, key: str):
+    """Cancella i filtri della sola pagina corrente e torna alla stessa pagina."""
+    if request.method == "POST" and request.POST.get("form_action") == "clear":
+        request.session.pop(key, None)
+        return redirect(request.path)
+    return None
 
 def recipe_list(request: HttpRequest) -> HttpResponse:
-    search = request.GET.get("search", "").strip()
-    selected_types = request.GET.getlist("tipo")
+    clear_response = _clear_filters(request, "recipe_filters")
+    if clear_response:
+        return clear_response
+    filters = _session_filters(
+        request,
+        "recipe_filters",
+        {
+            "search": "",
+            "tipo": [],
+            "ingrediente": "",
+            "regione": "",
+            "pubblicazione": "tutte",
+            "ordina": "titolo",
+            "direzione": "asc",
+        },
+    )
+    search = filters["search"]
+    selected_types = [value.lower() for value in filters["tipo"] if value.lower() in RECIPE_TYPES]
+    ingredient = filters["ingrediente"]
+    region_code = filters["regione"]
+    publication_status = filters["pubblicazione"]
+    sort_field = filters["ordina"]
+    sort_direction = filters["direzione"]
 
-    base_query = Recipe.objects.all()
+    if publication_status not in {"tutte", "pubblicate", "non_pubblicate"}:
+        publication_status = "tutte"
+    sort_fields = {"titolo": "title", "tipologia": "recipe_type", "regione": "region_name"}
+    if sort_field not in sort_fields:
+        sort_field = "titolo"
+    if sort_direction not in {"asc", "desc"}:
+        sort_direction = "asc"
+
+    publication_exists = Publication.objects.filter(recipe_id=OuterRef("pk"))
+    recipes = (
+        Recipe.objects.annotate(
+            is_published=Exists(publication_exists),
+            region_name=Max("regional_links__region__name"),
+        )
+        .prefetch_related("ingredients", "regional_links__region", "publications")
+    )
     if search:
-        base_query = base_query.filter(title__icontains=search)
+        recipes = recipes.filter(title__icontains=search)
+    if selected_types:
+        recipes = recipes.filter(recipe_type__in=selected_types)
+    if ingredient:
+        recipes = recipes.filter(ingredients__name__icontains=ingredient)
+    if region_code:
+        recipes = recipes.filter(regional_links__region_id=region_code)
+    if publication_status == "pubblicate":
+        recipes = recipes.filter(is_published=True)
+    elif publication_status == "non_pubblicate":
+        recipes = recipes.filter(is_published=False)
 
-    # Le ricette vengono divise nelle stesse sezioni presenti nel progetto PHP.
-    sections = []
-    for key, label in RECIPE_TYPES.items():
-        if selected_types and key not in selected_types:
-            recipes = Recipe.objects.none()
-        else:
-            recipes = base_query.filter(recipe_type=key).order_by("title")
-        sections.append({"key": key, "label": label, "recipes": recipes})
+    recipes = recipes.distinct()
+    total_count = Recipe.objects.count()
+    filtered_count = recipes.count()
+    type_counts = list(
+        Recipe.objects.values("recipe_type")
+        .annotate(total=Count("number"))
+        .order_by("recipe_type")
+    )
+    counts_by_type = {item["recipe_type"]: item["total"] for item in type_counts}
+    type_stats = [
+        {"label": label, "count": counts_by_type.get(key, 0)}
+        for key, label in RECIPE_TYPES.items()
+    ]
+
+    order_field = sort_fields[sort_field]
+    if sort_direction == "desc":
+        order_field = f"-{order_field}"
+    recipes = recipes.order_by(order_field, "title")
+    page_number = request.POST.get("page", 1) if request.POST.get("form_action") == "paginate" else 1
+    page_obj = Paginator(recipes, 12).get_page(page_number)
+
+    active_filters = []
+    if search:
+        active_filters.append(f'Titolo: "{search}"')
+    if selected_types:
+        active_filters.append("Tipologie: " + ", ".join(RECIPE_TYPES[t] for t in selected_types))
+    if ingredient:
+        active_filters.append(f'Ingrediente: "{ingredient}"')
+    if region_code:
+        active_filters.append("Regione selezionata")
+    if publication_status != "tutte":
+        active_filters.append("Solo pubblicate" if publication_status == "pubblicate" else "Solo non pubblicate")
 
     return render(
         request,
@@ -67,24 +164,27 @@ def recipe_list(request: HttpRequest) -> HttpResponse:
             "active_section": "ricette",
             "search": search,
             "selected_types": selected_types,
+            "ingredient_filter": ingredient,
+            "region_filter": region_code,
+            "publication_status": publication_status,
+            "sort_field": sort_field,
+            "sort_direction": sort_direction,
             "recipe_types": RECIPE_TYPES.items(),
-            "sections": sections,
+            "regions": Region.objects.order_by("name"),
+            "page_obj": page_obj,
+            "recipes": page_obj.object_list,
+            "show_filters": bool(active_filters or sort_field != "titolo" or sort_direction != "asc"),
+            "active_filters": active_filters,
+            "total_count": total_count,
+            "filtered_count": filtered_count,
+            "type_stats": type_stats,
         },
     )
-
 
 def recipe_detail(request: HttpRequest, number: int) -> HttpResponse:
     recipe = get_object_or_404(Recipe, number=number)
 
-    source = request.GET.get("from")
-    if source == "regione" and request.GET.get("cod"):
-        back_url = reverse("region_detail", args=[request.GET["cod"]])
-    elif source == "ingrediente" and request.GET.get("ingrediente"):
-        back_url = reverse("ingredient_detail", args=[request.GET["ingrediente"]])
-    elif source == "libro" and request.GET.get("isbn"):
-        back_url = reverse("book_detail", args=[request.GET["isbn"]])
-    else:
-        back_url = _safe_referer(request, reverse("recipe_list"))
+    back_url = reverse("recipe_list")
 
     region_link = (
         RegionalRecipe.objects.select_related("region")
@@ -104,29 +204,72 @@ def recipe_detail(request: HttpRequest, number: int) -> HttpResponse:
             "region": region_link.region if region_link else None,
             "publications": publications,
             "back_url": back_url,
+            "ingredient_count": recipe.ingredients.count(),
+            "publication_count": publications.count(),
         },
     )
 
-
 def ingredient_list(request: HttpRequest) -> HttpResponse:
-    search = request.GET.get("search", "").strip()
-    selected_letters = [letter.upper() for letter in request.GET.getlist("lettera")]
+    clear_response = _clear_filters(request, "ingredient_filters")
+    if clear_response:
+        return clear_response
+    data = _session_filters(request, "ingredient_filters", {"search": "", "lettera": [], "ricette_min": "", "ricette_max": "", "ordina": "nome", "direzione": "asc"})
+    search = data["search"]
+    selected_letters = [
+        letter.upper()
+        for letter in data["lettera"]
+        if letter.upper() in ALPHABET
+    ]
+    min_recipes_raw = data["ricette_min"]
+    max_recipes_raw = data["ricette_max"]
+    min_recipes = _non_negative_int(min_recipes_raw)
+    max_recipes = _non_negative_int(max_recipes_raw)
+    sort_field = data["ordina"]
+    sort_direction = data["direzione"]
 
-    # Un solo risultato per nome, con il numero di ricette in cui compare.
-    query = Ingredient.objects.values("name").annotate(count=Count("id"))
+    sort_fields = {
+        "nome": "name",
+        "ricette": "recipe_count",
+    }
+    if sort_field not in sort_fields:
+        sort_field = "nome"
+    if sort_direction not in {"asc", "desc"}:
+        sort_direction = "asc"
+
+    ingredients = Ingredient.objects.values("name").annotate(
+        recipe_count=Count("recipe", distinct=True)
+    )
     if search:
-        query = query.filter(name__icontains=search)
+        ingredients = ingredients.filter(name__icontains=search)
     if selected_letters:
         letter_query = Q()
         for letter in selected_letters:
             letter_query |= Q(name__istartswith=letter)
-        query = query.filter(letter_query)
-    query = query.order_by("name")
+        ingredients = ingredients.filter(letter_query)
+    if min_recipes is not None:
+        ingredients = ingredients.filter(recipe_count__gte=min_recipes)
+    if max_recipes is not None:
+        ingredients = ingredients.filter(recipe_count__lte=max_recipes)
 
-    grouped: OrderedDict[str, list[dict]] = OrderedDict()
-    for item in query:
-        initial = item["name"][:1].upper()
-        grouped.setdefault(initial, []).append(item)
+    total_count = Ingredient.objects.values("name").distinct().count()
+    filtered_count = ingredients.count()
+
+    order_field = sort_fields[sort_field]
+    if sort_direction == "desc":
+        order_field = f"-{order_field}"
+    ingredients = ingredients.order_by(order_field, "name")
+    page_number = request.POST.get("page", 1) if request.POST.get("form_action") == "paginate" else 1
+    page_obj = Paginator(ingredients, 20).get_page(page_number)
+
+    active_filters = []
+    if search:
+        active_filters.append(f'Nome: "{search}"')
+    if selected_letters:
+        active_filters.append(f"Iniziali: {', '.join(selected_letters)}")
+    if min_recipes is not None:
+        active_filters.append(f"Almeno {min_recipes} ricette")
+    if max_recipes is not None:
+        active_filters.append(f"Al massimo {max_recipes} ricette")
 
     return render(
         request,
@@ -136,10 +279,24 @@ def ingredient_list(request: HttpRequest) -> HttpResponse:
             "search": search,
             "selected_letters": selected_letters,
             "alphabet": ALPHABET,
-            "grouped": grouped.items(),
+            "ingredients": page_obj.object_list,
+            "page_obj": page_obj,
+            "min_recipes": min_recipes_raw,
+            "max_recipes": max_recipes_raw,
+            "sort_field": sort_field,
+            "sort_direction": sort_direction,
+            "show_filters": bool(
+                selected_letters
+                or min_recipes_raw
+                or max_recipes_raw
+                or sort_field != "nome"
+                or sort_direction != "asc"
+            ),
+            "active_filters": active_filters,
+            "total_count": total_count,
+            "filtered_count": filtered_count,
         },
     )
-
 
 def ingredient_detail(request: HttpRequest, name: str) -> HttpResponse:
     uses = Ingredient.objects.select_related("recipe").filter(name=name)
@@ -154,10 +311,7 @@ def ingredient_detail(request: HttpRequest, name: str) -> HttpResponse:
             status=404,
         )
 
-    if request.GET.get("from") == "ricetta" and request.GET.get("numero"):
-        back_url = reverse("recipe_detail", args=[request.GET["numero"]])
-    else:
-        back_url = _safe_referer(request, reverse("ingredient_list"))
+    back_url = reverse("ingredient_list")
 
     return render(
         request,
@@ -169,7 +323,6 @@ def ingredient_detail(request: HttpRequest, name: str) -> HttpResponse:
             "back_url": back_url,
         },
     )
-
 
 def ingredient_create(request: HttpRequest, recipe_number: int) -> HttpResponse:
     recipe = get_object_or_404(Recipe, number=recipe_number)
@@ -198,7 +351,6 @@ def ingredient_create(request: HttpRequest, recipe_number: int) -> HttpResponse:
         },
     )
 
-
 def ingredient_edit(
     request: HttpRequest,
     recipe_number: int,
@@ -221,7 +373,6 @@ def ingredient_edit(
         if form.is_valid():
             new_name = form.cleaned_data.get("name", "").strip() or original_name
             propagate = form.cleaned_data.get("propagate", False)
-            # Il cambio globale deve riuscire interamente oppure non modificare nulla.
             with transaction.atomic():
                 updated = form.save(commit=False)
                 updated.name = new_name
@@ -246,7 +397,6 @@ def ingredient_edit(
         },
     )
 
-
 def ingredient_delete(request: HttpRequest) -> HttpResponse:
     if request.method != "POST":
         return redirect("recipe_list")
@@ -259,17 +409,61 @@ def ingredient_delete(request: HttpRequest) -> HttpResponse:
     Ingredient.objects.filter(id=ingredient_id, recipe_id=recipe_number).delete()
     return redirect("recipe_detail", number=recipe_number)
 
-
 def region_list(request: HttpRequest) -> HttpResponse:
-    search = request.GET.get("search", "").strip()
-    selected_zones = request.GET.getlist("zona")
+    clear_response = _clear_filters(request, "region_filters")
+    if clear_response:
+        return clear_response
+    data = _session_filters(request, "region_filters", {"search": "", "zona": [], "ricette_min": "", "ricette_max": "", "ordina": "nome", "direzione": "asc"})
+    search = data["search"]
+    selected_zones = [zone for zone in data["zona"] if zone in ZONES]
+    min_recipes_raw = data["ricette_min"]
+    max_recipes_raw = data["ricette_max"]
+    min_recipes = _non_negative_int(min_recipes_raw)
+    max_recipes = _non_negative_int(max_recipes_raw)
+    sort_field = data["ordina"]
+    sort_direction = data["direzione"]
 
-    regions = Region.objects.annotate(recipe_count=Count("regional_recipes"))
+    sort_fields = {
+        "nome": "name",
+        "zona": "zone",
+        "ricette": "recipe_count",
+    }
+    if sort_field not in sort_fields:
+        sort_field = "nome"
+    if sort_direction not in {"asc", "desc"}:
+        sort_direction = "asc"
+
+    regions = Region.objects.annotate(
+        recipe_count=Count("regional_recipes__recipe", distinct=True)
+    )
     if search:
         regions = regions.filter(name__icontains=search)
     if selected_zones:
         regions = regions.filter(zone__in=selected_zones)
-    regions = regions.order_by("name")
+    if min_recipes is not None:
+        regions = regions.filter(recipe_count__gte=min_recipes)
+    if max_recipes is not None:
+        regions = regions.filter(recipe_count__lte=max_recipes)
+
+    total_count = Region.objects.count()
+    filtered_count = regions.count()
+
+    order_field = sort_fields[sort_field]
+    if sort_direction == "desc":
+        order_field = f"-{order_field}"
+    regions = regions.order_by(order_field, "name")
+    page_number = request.POST.get("page", 1) if request.POST.get("form_action") == "paginate" else 1
+    page_obj = Paginator(regions, 12).get_page(page_number)
+
+    active_filters = []
+    if search:
+        active_filters.append(f'Nome: "{search}"')
+    if selected_zones:
+        active_filters.append(f"Zone: {', '.join(selected_zones)}")
+    if min_recipes is not None:
+        active_filters.append(f"Almeno {min_recipes} ricette")
+    if max_recipes is not None:
+        active_filters.append(f"Al massimo {max_recipes} ricette")
 
     return render(
         request,
@@ -279,15 +473,33 @@ def region_list(request: HttpRequest) -> HttpResponse:
             "search": search,
             "selected_zones": selected_zones,
             "zones": ZONES,
-            "regions": regions,
+            "regions": page_obj.object_list,
+            "page_obj": page_obj,
+            "min_recipes": min_recipes_raw,
+            "max_recipes": max_recipes_raw,
+            "sort_field": sort_field,
+            "sort_direction": sort_direction,
+            "show_filters": bool(
+                selected_zones
+                or min_recipes_raw
+                or max_recipes_raw
+                or sort_field != "nome"
+                or sort_direction != "asc"
+            ),
+            "active_filters": active_filters,
+            "total_count": total_count,
+            "filtered_count": filtered_count,
         },
     )
 
-
 def region_detail(request: HttpRequest, code: str) -> HttpResponse:
     region = get_object_or_404(Region, code=code)
-    links = RegionalRecipe.objects.select_related("recipe").filter(region=region)
-    back_url = _safe_referer(request, reverse("region_list"))
+    links = (
+        RegionalRecipe.objects.select_related("recipe")
+        .filter(region=region)
+        .order_by("recipe__title")
+    )
+    back_url = reverse("region_list")
 
     return render(
         request,
@@ -296,21 +508,38 @@ def region_detail(request: HttpRequest, code: str) -> HttpResponse:
             "active_section": "regioni",
             "region": region,
             "links": links,
+            "recipe_count": links.count(),
             "back_url": back_url,
         },
     )
 
-
 def book_list(request: HttpRequest) -> HttpResponse:
-    title = request.GET.get("titolo", "").strip()
-    year = request.GET.get("anno", "").strip()
-    isbn = request.GET.get("isbn", "").strip()
-    sort_field = request.GET.get("sort", "titolo")
-    sort_direction = request.GET.get("dir", "asc")
+    clear_response = _clear_filters(request, "book_filters")
+    if clear_response:
+        return clear_response
+    data = _session_filters(request, "book_filters", {"titolo": "", "ricetta": "", "anno": "", "isbn": "", "pagine_min": "", "pagine_max": "", "ricette_min": "", "ricette_max": "", "ordina": "titolo", "direzione": "asc"})
+    title = data["titolo"]
+    recipe = data["ricetta"]
+    year = data["anno"]
+    isbn = data["isbn"]
+    min_pages_raw = data["pagine_min"]
+    max_pages_raw = data["pagine_max"]
+    min_recipes_raw = data["ricette_min"]
+    max_recipes_raw = data["ricette_max"]
+    min_pages = _non_negative_int(min_pages_raw)
+    max_pages = _non_negative_int(max_pages_raw)
+    min_recipes = _non_negative_int(min_recipes_raw)
+    max_recipes = _non_negative_int(max_recipes_raw)
+    sort_field = data["ordina"]
+    sort_direction = data["direzione"]
 
-    # La mappa limita i campi accettati ed evita ordinamenti arbitrari.
-    field_map = {"titolo": "title", "anno": "year"}
-    if sort_field not in field_map:
+    sort_fields = {
+        "titolo": "title",
+        "anno": "year",
+        "pagine": "page_count",
+        "ricette": "recipe_count",
+    }
+    if sort_field not in sort_fields:
         sort_field = "titolo"
     if sort_direction not in {"asc", "desc"}:
         sort_direction = "asc"
@@ -321,15 +550,48 @@ def book_list(request: HttpRequest) -> HttpResponse:
     )
     if title:
         books = books.filter(title__icontains=title)
+    if recipe:
+        books = books.filter(publications__recipe__title__icontains=recipe)
     if year:
         books = books.filter(year=year)
     if isbn:
         books = books.filter(isbn__icontains=isbn)
+    if min_pages is not None:
+        books = books.filter(page_count__gte=min_pages)
+    if max_pages is not None:
+        books = books.filter(page_count__lte=max_pages)
+    if min_recipes is not None:
+        books = books.filter(recipe_count__gte=min_recipes)
+    if max_recipes is not None:
+        books = books.filter(recipe_count__lte=max_recipes)
 
-    order_field = field_map[sort_field]
+    total_count = Book.objects.count()
+    filtered_count = books.count()
+
+    order_field = sort_fields[sort_field]
     if sort_direction == "desc":
         order_field = f"-{order_field}"
-    books = books.order_by(order_field)
+    books = books.order_by(order_field, "title").distinct()
+    page_number = request.POST.get("page", 1) if request.POST.get("form_action") == "paginate" else 1
+    page_obj = Paginator(books, 15).get_page(page_number)
+
+    active_filters = []
+    if title:
+        active_filters.append(f'Titolo: "{title}"')
+    if recipe:
+        active_filters.append(f'Ricetta: "{recipe}"')
+    if year:
+        active_filters.append(f"Anno: {year}")
+    if isbn:
+        active_filters.append(f"ISBN: {isbn}")
+    if min_pages is not None:
+        active_filters.append(f"Almeno {min_pages} pagine")
+    if max_pages is not None:
+        active_filters.append(f"Al massimo {max_pages} pagine")
+    if min_recipes is not None:
+        active_filters.append(f"Almeno {min_recipes} ricette")
+    if max_recipes is not None:
+        active_filters.append(f"Al massimo {max_recipes} ricette")
 
     return render(
         request,
@@ -337,29 +599,36 @@ def book_list(request: HttpRequest) -> HttpResponse:
         {
             "active_section": "libri",
             "title_filter": title,
+            "recipe_filter": recipe,
             "year_filter": year,
             "isbn_filter": isbn,
-            "show_filters": bool(title or year or isbn),
-            "books": books,
+            "min_pages": min_pages_raw,
+            "max_pages": max_pages_raw,
+            "min_recipes": min_recipes_raw,
+            "max_recipes": max_recipes_raw,
+            "books": page_obj.object_list,
+            "page_obj": page_obj,
             "sort_field": sort_field,
             "sort_direction": sort_direction,
+            "active_filters": active_filters,
+            "total_count": total_count,
+            "filtered_count": filtered_count,
         },
     )
 
-
 def book_detail(request: HttpRequest, isbn: str) -> HttpResponse:
     book = get_object_or_404(Book, isbn=isbn)
-    publications = Publication.objects.select_related("recipe").filter(book=book)
+    publications = (
+        Publication.objects.select_related("recipe")
+        .filter(book=book)
+        .order_by("page_number")
+    )
+    recipe_count = publications.count()
+    page_count = publications.aggregate(total=Max("page_number"))["total"] or 0
+    page_number = request.POST.get("page", 1) if request.POST.get("form_action") == "paginate" else 1
+    page_obj = Paginator(publications, 30).get_page(page_number)
 
-    source = request.GET.get("from")
-    if source == "ricetta" and request.GET.get("numero"):
-        back_url = reverse("recipe_detail", args=[request.GET["numero"]])
-    elif source == "regione" and request.GET.get("cod"):
-        back_url = reverse("region_detail", args=[request.GET["cod"]])
-    elif source == "ingrediente" and request.GET.get("ingrediente"):
-        back_url = reverse("ingredient_detail", args=[request.GET["ingrediente"]])
-    else:
-        back_url = _safe_referer(request, reverse("book_list"))
+    back_url = reverse("book_list")
 
     return render(
         request,
@@ -367,7 +636,10 @@ def book_detail(request: HttpRequest, isbn: str) -> HttpResponse:
         {
             "active_section": "libri",
             "book": book,
-            "publications": publications,
+            "publications": page_obj.object_list,
+            "page_obj": page_obj,
+            "recipe_count": recipe_count,
+            "page_count": page_count,
             "back_url": back_url,
         },
     )

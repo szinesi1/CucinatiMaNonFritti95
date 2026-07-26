@@ -3,84 +3,156 @@
 {% block title %}Libri · Cucinati Ma Non Fritti 95{% endblock %}
 
 {% block content %}
-<!-- =========================
-     FILTRI UI
-========================= -->
+<form method="POST" class="filters">
+    {% csrf_token %}
+    <div class="book-filters-grid">
+        <label>
+            Titolo
+            <input type="text"
+                   name="titolo"
+                   class="filters-input2"
+                   placeholder="Cerca titolo..."
+                   value="{{ title_filter }}">
+        </label>
 
-<form method="GET" class="filters">
+        <label>
+            Ricetta contenuta
+            <input type="text"
+                   name="ricetta"
+                   class="filters-input2"
+                   placeholder="Cerca ricetta..."
+                   value="{{ recipe_filter }}">
+        </label>
 
-    <div class="filters-top">
-        <input type="text"
-               name="titolo"
-               class="filters-input"
-               placeholder="Cerca titolo..."
-               value="{{ title_filter }}">
-
-        <button type="button" id="toggleFilters" class="secondary-button">
-            {% if show_filters %}Meno filtri{% else %}Più filtri{% endif %}
-        </button>
-    </div>
-
-    <div id="advancedFilters"
-         class="advanced-filters {% if show_filters %}open{% endif %}">
-
-        <div class="filter-group">
+        <label>
+            Anno
             <input type="number"
                    name="anno"
                    class="filters-input2"
+                   min="0"
                    placeholder="Anno"
                    value="{{ year_filter }}">
+        </label>
 
+        <label>
+            ISBN
             <input type="text"
                    name="isbn"
                    class="filters-input2"
                    placeholder="ISBN"
                    value="{{ isbn_filter }}">
-        </div>
+        </label>
+
+        <label>
+            Pagine minime
+            <input type="number"
+                   name="pagine_min"
+                   class="filters-input2"
+                   min="0"
+                   placeholder="Min. pagine"
+                   value="{{ min_pages }}">
+        </label>
+
+        <label>
+            Pagine massime
+            <input type="number"
+                   name="pagine_max"
+                   class="filters-input2"
+                   min="0"
+                   placeholder="Max. pagine"
+                   value="{{ max_pages }}">
+        </label>
+
+        <label>
+            Ricette minime
+            <input type="number"
+                   name="ricette_min"
+                   class="filters-input2"
+                   min="0"
+                   placeholder="Min. ricette"
+                   value="{{ min_recipes }}">
+        </label>
+
+        <label>
+            Ricette massime
+            <input type="number"
+                   name="ricette_max"
+                   class="filters-input2"
+                   min="0"
+                   placeholder="Max. ricette"
+                   value="{{ max_recipes }}">
+        </label>
+
+        <label>
+            Ordina per
+            <select name="ordina" class="filters-select">
+                <option value="titolo" {% if sort_field == 'titolo' %}selected{% endif %}>Titolo</option>
+                <option value="anno" {% if sort_field == 'anno' %}selected{% endif %}>Anno</option>
+                <option value="pagine" {% if sort_field == 'pagine' %}selected{% endif %}>Numero di pagine</option>
+                <option value="ricette" {% if sort_field == 'ricette' %}selected{% endif %}>Numero di ricette</option>
+            </select>
+        </label>
+
+        <label>
+            Direzione
+            <select name="direzione" class="filters-select">
+                <option value="asc" {% if sort_direction == 'asc' %}selected{% endif %}>Crescente</option>
+                <option value="desc" {% if sort_direction == 'desc' %}selected{% endif %}>Decrescente</option>
+            </select>
+        </label>
     </div>
+
+    {% if active_filters %}
+        <div class="active-filters-summary" aria-live="polite">
+            <strong>Filtri applicati:</strong>
+            {% for item in active_filters %}
+                <span>{{ item }}</span>
+            {% endfor %}
+        </div>
+    {% endif %}
 
     <div class="filters-actions">
-        <button type="submit" class="btn">Filtra</button>
-        <a href="{% url 'book_list' %}" class="reset-button">Reset</a>
+        <button type="submit" name="form_action" value="filter" class="btn">Cerca</button>
+        <button type="submit" name="form_action" value="clear" class="reset-button">Cancella filtri</button>
     </div>
-
 </form>
 
-<h2>Elenco Libri</h2>
+<div class="section-heading-row">
+    <h2>Elenco libri</h2>
+    <p class="results-summary">
+        Risultati: <strong>{{ filtered_count }}</strong> su <strong>{{ total_count }}</strong>
+    </p>
+</div>
 
+<div class="table-responsive">
 <table class="table-libri">
-<tr>
-    <th>Titolo</th>
-    <th>Anno</th>
-    <th>Pagine</th>
-    <th>Ricette nel libro</th>
-</tr>
-
-{% for book in books %}
-<tr>
-    <td>
-        <a href="{% url 'book_detail' book.isbn %}">
-            {{ book.title }}
-        </a>
-    </td>
-
-    <td>{{ book.year }}</td>
-    <td>{{ book.page_count|default:0 }}</td>
-    <td>{{ book.recipe_count }}</td>
-</tr>
-{% endfor %}
+    <thead>
+        <tr>
+            <th>Titolo</th>
+            <th>Anno</th>
+            <th>Pagine</th>
+            <th>Ricette nel libro</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for book in books %}
+        <tr>
+            <td>
+                <a href="{% url 'book_detail' book.isbn %}">
+                    {{ book.title }}
+                </a>
+            </td>
+            <td>{{ book.year }}</td>
+            <td>{{ book.page_count|default:0 }}</td>
+            <td>{{ book.recipe_count }}</td>
+        </tr>
+    {% empty %}
+        <tr>
+            <td colspan="4">Nessun libro corrisponde ai criteri selezionati.</td>
+        </tr>
+    {% endfor %}
+    </tbody>
 </table>
-{% endblock %}
-
-{% block scripts %}
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    const btn = document.getElementById('toggleFilters');
-    const panel = document.getElementById('advancedFilters');
-
-    btn.addEventListener('click', function () {
-        panel.classList.toggle('open');
-    });
-});
-</script>
+</div>
+{% include "cucina/pagination.html" %}
 {% endblock %}

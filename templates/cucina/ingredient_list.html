@@ -1,15 +1,11 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}Ingredienti · Cucinati Ma Non Fritti 95{% endblock %}
 
 {% block content %}
-<!-- =========================
-     FILTRI
-========================= -->
-
-<form method="GET" class="filters">
-
-    <!-- TOP BAR -->
+<form method="POST" class="filters">
+    {% csrf_token %}
     <div class="filters-top">
         <input type="text"
                name="search"
@@ -17,16 +13,21 @@
                placeholder="Cerca ingrediente..."
                value="{{ search }}">
 
-        <button type="button" id="toggleFilters" class="secondary-button">
+        <button type="button"
+                id="toggleFilters"
+                class="secondary-button"
+                data-closed-label="Filtri avanzati"
+                data-open-label="Nascondi filtri"
+                aria-controls="advancedFilters"
+                aria-expanded="{% if show_filters %}true{% else %}false{% endif %}">
             Filtri avanzati
         </button>
     </div>
 
-    <!-- FILTRI AVANZATI -->
-    <div id="advancedFilters" class="alphabet-filter">
+    <div id="advancedFilters"
+         class="alphabet-filter ingredient-filters {% if show_filters %}open{% endif %}">
         <fieldset>
             <legend>Lettera iniziale</legend>
-
             <div class="alphabet-bar">
                 {% for letter in alphabet %}
                     <label class="lettera-item">
@@ -39,52 +40,106 @@
                 {% endfor %}
             </div>
         </fieldset>
+
+        <div class="ingredient-filter-row">
+            <fieldset>
+                <legend>Numero di ricette</legend>
+                <div class="filter-range">
+                    <label>
+                        Minimo
+                        <input type="number"
+                               name="ricette_min"
+                               class="filters-input2"
+                               min="0"
+                               placeholder="Min."
+                               value="{{ min_recipes }}">
+                    </label>
+
+                    <label>
+                        Massimo
+                        <input type="number"
+                               name="ricette_max"
+                               class="filters-input2"
+                               min="0"
+                               placeholder="Max."
+                               value="{{ max_recipes }}">
+                    </label>
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <legend>Ordinamento</legend>
+                <div class="filter-sort">
+                    <label>
+                        Ordina per
+                        <select name="ordina" class="filters-select">
+                            <option value="nome" {% if sort_field == 'nome' %}selected{% endif %}>Nome</option>
+                            <option value="ricette" {% if sort_field == 'ricette' %}selected{% endif %}>Numero di ricette</option>
+                        </select>
+                    </label>
+
+                    <label>
+                        Direzione
+                        <select name="direzione" class="filters-select">
+                            <option value="asc" {% if sort_direction == 'asc' %}selected{% endif %}>Crescente</option>
+                            <option value="desc" {% if sort_direction == 'desc' %}selected{% endif %}>Decrescente</option>
+                        </select>
+                    </label>
+                </div>
+            </fieldset>
+        </div>
     </div>
 
-    <!-- AZIONI FUORI DAL TOGGLE -->
+    {% if active_filters %}
+        <div class="active-filters-summary" aria-live="polite">
+            <strong>Filtri applicati:</strong>
+            {% for item in active_filters %}
+                <span>{{ item }}</span>
+            {% endfor %}
+        </div>
+    {% endif %}
+
     <div class="filters-actions">
-        <button type="submit" class="btn">Filtra</button>
-        <a href="{% url 'ingredient_list' %}" class="reset-button">Reset</a>
+        <button type="submit" name="form_action" value="filter" class="btn">Cerca</button>
+        <button type="submit" name="form_action" value="clear" class="reset-button">Cancella filtri</button>
     </div>
-
 </form>
 
-<!-- =========================
-     OUTPUT
-========================= -->
-
-<h2>Elenco Ingredienti</h2>
-
-<div class="ingredienti-container">
-{% for letter, ingredients in grouped %}
-    <div class="letter-header">{{ letter }}</div>
-
-    <div class="card-grid">
-        {% for ingredient in ingredients %}
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">{{ ingredient.name }}</h5>
-
-                    <p>
-                        Usato in <strong>{{ ingredient.count }}</strong> ricette
-                    </p>
-
-                    <a href="{% url 'ingredient_detail' ingredient.name %}"
-                       class="card-button">
-                        Vedi ingrediente
-                    </a>
-                </div>
-            </div>
-        {% endfor %}
-    </div>
-{% endfor %}
+<div class="section-heading-row">
+    <h2>Elenco ingredienti</h2>
+    <p class="results-summary">
+        Risultati: <strong>{{ filtered_count }}</strong> su <strong>{{ total_count }}</strong>
+    </p>
 </div>
+
+<div class="table-responsive">
+<table class="table-ingredienti">
+    <thead>
+        <tr>
+            <th>N.</th>
+            <th>Ingrediente</th>
+            <th>Numero di ricette</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for ingredient in ingredients %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>
+                <a href="{% url 'ingredient_detail' ingredient.name %}">
+                    {{ ingredient.name }}
+                </a>
+            </td>
+            <td>{{ ingredient.recipe_count }}</td>
+        </tr>
+    {% empty %}
+        <tr>
+            <td colspan="3">Nessun ingrediente corrisponde ai criteri selezionati.</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+</div>
+{% include "cucina/pagination.html" %}
 {% endblock %}
 
-{% block scripts %}
-<script>
-document.getElementById('toggleFilters').addEventListener('click', function () {
-    document.getElementById('advancedFilters').classList.toggle('open');
-});
-</script>
-{% endblock %}

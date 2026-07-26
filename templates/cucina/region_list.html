@@ -1,14 +1,11 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}Regioni · Cucinati Ma Non Fritti 95{% endblock %}
 
 {% block content %}
-<!-- =========================
-     FILTRI (STILE UGUALE RICETTE)
-========================= -->
-
-<form method="GET" class="filters">
-
+<form method="POST" class="filters">
+    {% csrf_token %}
     <div class="filters-top">
         <input type="text"
                name="search"
@@ -16,15 +13,22 @@
                placeholder="Cerca regione..."
                value="{{ search }}">
 
-        <button type="button" id="toggleFilters" class="secondary-button">
-            Filtri
+        <button type="button"
+                id="toggleFilters"
+                class="secondary-button"
+                data-closed-label="Filtri avanzati"
+                data-open-label="Nascondi filtri"
+                aria-controls="advancedFilters"
+                aria-expanded="{% if show_filters %}true{% else %}false{% endif %}">
+            Filtri avanzati
         </button>
     </div>
 
-    <div id="advancedFilters" class="advanced-filters">
+    <div id="advancedFilters"
+         class="advanced-filters region-filters {% if show_filters %}open{% endif %}">
         <fieldset>
             <legend>Zona geografica</legend>
-            <div class="alphabet-bar">
+            <div class="zone-group">
                 {% for zone in zones %}
                     <label class="check-ui">
                         <input type="checkbox"
@@ -37,30 +41,84 @@
                 {% endfor %}
             </div>
         </fieldset>
+
+        <fieldset>
+            <legend>Numero di ricette</legend>
+            <div class="filter-range">
+                <label>
+                    Minimo
+                    <input type="number"
+                           name="ricette_min"
+                           class="filters-input2"
+                           min="0"
+                           placeholder="Min."
+                           value="{{ min_recipes }}">
+                </label>
+
+                <label>
+                    Massimo
+                    <input type="number"
+                           name="ricette_max"
+                           class="filters-input2"
+                           min="0"
+                           placeholder="Max."
+                           value="{{ max_recipes }}">
+                </label>
+            </div>
+        </fieldset>
+
+        <fieldset>
+            <legend>Ordinamento</legend>
+            <div class="filter-sort">
+                <label>
+                    Ordina per
+                    <select name="ordina" class="filters-select">
+                        <option value="nome" {% if sort_field == 'nome' %}selected{% endif %}>Nome</option>
+                        <option value="zona" {% if sort_field == 'zona' %}selected{% endif %}>Zona geografica</option>
+                        <option value="ricette" {% if sort_field == 'ricette' %}selected{% endif %}>Numero di ricette</option>
+                    </select>
+                </label>
+
+                <label>
+                    Direzione
+                    <select name="direzione" class="filters-select">
+                        <option value="asc" {% if sort_direction == 'asc' %}selected{% endif %}>Crescente</option>
+                        <option value="desc" {% if sort_direction == 'desc' %}selected{% endif %}>Decrescente</option>
+                    </select>
+                </label>
+            </div>
+        </fieldset>
     </div>
+
+    {% if active_filters %}
+        <div class="active-filters-summary" aria-live="polite">
+            <strong>Filtri applicati:</strong>
+            {% for item in active_filters %}
+                <span>{{ item }}</span>
+            {% endfor %}
+        </div>
+    {% endif %}
 
     <div class="filters-actions">
-        <button type="submit" class="btn">Filtra</button>
-        <a href="{% url 'region_list' %}" class="reset-button">Reset</a>
+        <button type="submit" name="form_action" value="filter" class="btn">Cerca</button>
+        <button type="submit" name="form_action" value="clear" class="reset-button">Cancella filtri</button>
     </div>
-
 </form>
 
-<h2>Regioni italiane</h2>
-
-<!-- =========================
-     GRID CARD (STILE RICETTE)
-========================= -->
+<div class="section-heading-row">
+    <h2>Regioni italiane</h2>
+    <p class="results-summary">
+        Risultati: <strong>{{ filtered_count }}</strong> su <strong>{{ total_count }}</strong>
+    </p>
+</div>
 
 <div class="card-grid">
 {% for region in regions %}
     <div class="card">
         <div class="card-body">
             <h5 class="card-title">{{ region.name }}</h5>
-
             <p class="card-text">Zona: {{ region.zone }}</p>
-
-            <p class="card-text">{{ region.recipe_count }} ricette</p>
+            <p class="card-text"><strong>{{ region.recipe_count }}</strong> ricette</p>
 
             <a href="{% url 'region_detail' region.code %}"
                class="card-button">
@@ -68,14 +126,10 @@
             </a>
         </div>
     </div>
+{% empty %}
+    <p class="empty-results">Nessuna regione corrisponde ai criteri selezionati.</p>
 {% endfor %}
 </div>
+{% include "cucina/pagination.html" %}
 {% endblock %}
 
-{% block scripts %}
-<script>
-document.getElementById('toggleFilters').addEventListener('click', function () {
-    document.getElementById('advancedFilters').classList.toggle('open');
-});
-</script>
-{% endblock %}

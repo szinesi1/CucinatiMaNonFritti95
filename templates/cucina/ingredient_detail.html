@@ -4,7 +4,7 @@
 
 {% block content %}
 <a href="{{ back_url }}" class="btn-back">
-    ← Torna indietro
+    ← Torna alla pagina precedente
 </a>
 
 <h2>{{ ingredient_name }}</h2>
@@ -23,6 +23,6 @@
 </ul>
 
 <a href="{% url 'ingredient_list' %}" class="btn-category">
-    ← Torna agli ingredienti
+    ← Torna all'elenco degli ingredienti
 </a>
 {% endblock %}

@@ -54,3 +54,8 @@
     background: var(--spring-green);
     color: var(--white);
 }
+.table-libri th:nth-child(n+2),
+.table-libri td:nth-child(n+2) {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}

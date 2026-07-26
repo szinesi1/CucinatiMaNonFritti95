@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}Cucinati Ma Non Fritti 95{% endblock %}</title>
 
-    <!-- Bootstrap è caricato prima: il CSS originale conserva l'aspetto del progetto. -->
+    
     <link rel="stylesheet" href="{% static 'cucina/librerie/bootstrap/css/bootstrap.min.css' %}">
     <link rel="stylesheet" href="{% static 'cucina/css/style.css' %}">
     <link rel="stylesheet" href="{% static 'cucina/css/compatibilita-bootstrap.css' %}">
@@ -18,20 +18,20 @@
 
 <div class="layout flex-grow-1">
 
-    <!-- Navigazione principale -->
+    
     <aside class="sidebar">
         <nav class="nav-vertical">
             <ul>
                 <li><a class="{% if active_section == 'home' %}active{% endif %}" href="{% url 'home' %}">Home</a></li>
+                <li><a class="{% if active_section == 'libri' %}active{% endif %}" href="{% url 'book_list' %}">Libri</a></li>
                 <li><a class="{% if active_section == 'ricette' %}active{% endif %}" href="{% url 'recipe_list' %}">Ricette</a></li>
                 <li><a class="{% if active_section == 'ingredienti' %}active{% endif %}" href="{% url 'ingredient_list' %}">Ingredienti</a></li>
                 <li><a class="{% if active_section == 'regioni' %}active{% endif %}" href="{% url 'region_list' %}">Regioni</a></li>
-                <li><a class="{% if active_section == 'libri' %}active{% endif %}" href="{% url 'book_list' %}">Libri</a></li>
             </ul>
         </nav>
     </aside>
 
-    <!-- Contenuto della pagina -->
+    
     <main class="content">
         {% block content %}{% endblock %}
     </main>
@@ -44,6 +44,6 @@
 </footer>
 
 <script src="{% static 'cucina/librerie/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
-{% block scripts %}{% endblock %}
+<script src="{% static 'cucina/js/app.js' %}"></script>
 </body>
 </html>

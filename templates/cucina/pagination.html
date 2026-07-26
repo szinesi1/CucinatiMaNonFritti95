@@ -1,0 +1,11 @@
+{% if page_obj.paginator.num_pages > 1 %}
+<nav class="pagination" aria-label="Pagine dei risultati">
+    {% if page_obj.has_previous %}
+    <form method="post">{% csrf_token %}<input type="hidden" name="form_action" value="paginate"><input type="hidden" name="page" value="{{ page_obj.previous_page_number }}"><button type="submit" class="pagination-link">Precedente</button></form>
+    {% endif %}
+    <span>Pagina {{ page_obj.number }} di {{ page_obj.paginator.num_pages }}</span>
+    {% if page_obj.has_next %}
+    <form method="post">{% csrf_token %}<input type="hidden" name="form_action" value="paginate"><input type="hidden" name="page" value="{{ page_obj.next_page_number }}"><button type="submit" class="pagination-link">Successiva</button></form>
+    {% endif %}
+</nav>
+{% endif %}

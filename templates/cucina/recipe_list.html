@@ -1,85 +1,41 @@
 {% extends "base.html" %}
 {% load static %}
-
 {% block title %}Ricette · Cucinati Ma Non Fritti 95{% endblock %}
-
 {% block content %}
-<!-- FILTRI UI -->
-<form method="GET" class="filters">
+<section class="stats-grid" aria-label="Statistiche ricette">
+    <div class="stat-card stat-card-main"><span>Ricette totali</span><strong>{{ total_count }}</strong></div>
+    {% for item in type_stats %}<div class="stat-card"><span>{{ item.label }}</span><strong>{{ item.count }}</strong></div>{% endfor %}
+</section>
 
+<form method="POST" class="filters">
+    {% csrf_token %}
     <div class="filters-top">
-        <input type="text"
-               name="search"
-               class="filters-input"
-               placeholder="Cerca ricetta..."
-               value="{{ search }}">
-
-        <button type="button" id="toggleFilters" class="secondary-button">
-            Filtri
-        </button>
+        <input type="text" name="search" class="filters-input" placeholder="Cerca ricetta..." value="{{ search }}">
+        <button type="button" id="toggleFilters" class="secondary-button" data-closed-label="Filtri avanzati" data-open-label="Nascondi filtri" aria-controls="advancedFilters" aria-expanded="{% if show_filters %}true{% else %}false{% endif %}">Filtri avanzati</button>
     </div>
-
-    <div id="advancedFilters" class="advanced-filters">
-        <fieldset>
-            <legend>Tipologia</legend>
-            <div class="alphabet-bar">
-                {% for key, label in recipe_types %}
-                    <label class="check-ui">
-                        <input type="checkbox"
-                               name="tipo"
-                               class="check-box"
-                               value="{{ key }}"
-                               {% if key in selected_types %}checked{% endif %}>
-                        {{ label }}
-                    </label>
-                {% endfor %}
-            </div>
-        </fieldset>
+    <div id="advancedFilters" class="advanced-filters recipe-filters {% if show_filters %}open{% endif %}">
+        <fieldset class="recipe-type-fieldset"><legend>Tipologia</legend><div class="filter-group tipologie-group">
+            {% for key,label in recipe_types %}<label><input type="checkbox" name="tipo" value="{{ key }}" {% if key in selected_types %}checked{% endif %}> {{ label }}</label>{% endfor %}
+        </div></fieldset>
+        <fieldset><legend>Ingrediente e regione</legend><div class="filter-sort">
+            <label>Ingrediente<input type="text" name="ingrediente" class="filters-input2" value="{{ ingredient_filter }}" placeholder="Es. pomodoro"></label>
+            <label>Regione<select name="regione" class="filters-select"><option value="">Tutte le regioni</option>{% for region in regions %}<option value="{{ region.code }}" {% if region.code == region_filter %}selected{% endif %}>{{ region.name }}</option>{% endfor %}</select></label>
+        </div></fieldset>
+        <fieldset><legend>Pubblicazione</legend><select name="pubblicazione" class="filters-select"><option value="tutte" {% if publication_status == 'tutte' %}selected{% endif %}>Tutte</option><option value="pubblicate" {% if publication_status == 'pubblicate' %}selected{% endif %}>Pubblicate nei libri</option><option value="non_pubblicate" {% if publication_status == 'non_pubblicate' %}selected{% endif %}>Non pubblicate</option></select></fieldset>
+        <fieldset><legend>Ordinamento</legend><div class="filter-sort"><label>Ordina per<select name="ordina" class="filters-select"><option value="titolo" {% if sort_field == 'titolo' %}selected{% endif %}>Titolo</option><option value="tipologia" {% if sort_field == 'tipologia' %}selected{% endif %}>Tipologia</option><option value="regione" {% if sort_field == 'regione' %}selected{% endif %}>Regione</option></select></label><label>Direzione<select name="direzione" class="filters-select"><option value="asc" {% if sort_direction == 'asc' %}selected{% endif %}>Crescente</option><option value="desc" {% if sort_direction == 'desc' %}selected{% endif %}>Decrescente</option></select></label></div></fieldset>
     </div>
-
-    <div class="filters-actions">
-        <button type="submit" class="btn">Filtra</button>
-        <a href="{% url 'recipe_list' %}" class="reset-button">Reset</a>
-    </div>
-
+    {% if active_filters %}<div class="active-filters-summary"><strong>Filtri applicati:</strong>{% for item in active_filters %}<span>{{ item }}</span>{% endfor %}</div>{% endif %}
+    <div class="filters-actions"><button type="submit" name="form_action" value="filter" class="btn">Cerca</button><button type="submit" name="form_action" value="clear" class="reset-button">Cancella filtri</button></div>
 </form>
 
-<h2>Ricette per tipologia</h2>
-
-{% for section in sections %}
-    <h3>{{ section.label }}</h3>
-
-    <div class="card-grid">
-        {% for recipe in section.recipes %}
-            <div class="card">
-                {% if recipe.image %}
-                    <img src="{% static 'cucina/img/ricette/' %}{{ recipe.image }}"
-                         alt="{{ recipe.title }}">
-                {% else %}
-                    <img src="{% static 'cucina/img/default.jpg' %}"
-                         alt="{{ recipe.title }}">
-                {% endif %}
-
-                <div class="card-body">
-                    <h5 class="card-title">{{ recipe.title }}</h5>
-
-                    <a href="{% url 'recipe_detail' recipe.number %}"
-                       class="card-button">
-                        Vedi ricetta
-                    </a>
-                </div>
-            </div>
-        {% empty %}
-            <p>Nessuna ricetta.</p>
-        {% endfor %}
-    </div>
-{% endfor %}
-{% endblock %}
-
-{% block scripts %}
-<script>
-document.getElementById('toggleFilters').addEventListener('click', function () {
-    document.getElementById('advancedFilters').classList.toggle('open');
-});
-</script>
+<div class="section-heading-row"><h2>Elenco ricette</h2><p class="results-summary">Risultati trovati: <strong>{{ filtered_count }}</strong> su <strong>{{ total_count }}</strong></p></div>
+<div class="card-grid recipe-grid">
+{% for recipe in recipes %}
+<article class="card recipe-card">
+    {% if recipe.image %}<img src="{% static 'cucina/img/ricette/' %}{{ recipe.image }}" alt="{{ recipe.title }}">{% endif %}
+    <div class="card-body"><div class="recipe-card-content"><span class="recipe-type-badge">{{ recipe.get_recipe_type_display }}</span><h3 class="card-title">{{ recipe.title }}</h3><p class="card-info">{% if recipe.region_name %}Regione: {{ recipe.region_name }}{% else %}Regione non associata{% endif %}</p><p class="card-info">{% if recipe.is_published %}Pubblicata in almeno un libro{% else %}Non pubblicata{% endif %}</p></div><a href="{% url 'recipe_detail' recipe.number %}" class="card-button">Vedi ricetta</a></div>
+</article>
+{% empty %}<p class="empty-results">Nessuna ricetta corrisponde ai criteri selezionati.</p>{% endfor %}
+</div>
+{% include "cucina/pagination.html" %}
 {% endblock %}

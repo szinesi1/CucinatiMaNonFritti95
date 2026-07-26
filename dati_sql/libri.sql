@@ -1,6 +1,16 @@
 INSERT INTO Libri (codISBN, titolo, anno) VALUES
-('9788830100673','La scienza in cucina e l’arte di mangiar bene',1891),
-('9788807900281','Il talismano della felicità',1929),
-('9788850321990','Il Cucchiaio d’Argento – Undicesima Edizione',2020),
-('9788891819843','La cucina italiana. Il grande ricettario',2023),
-('9788809952844','Grammatica illustrata della cucina italiana',2023);
+('9788891000002','Antipasti e pani della tradizione',2024),
+('9788891000004','Carni e secondi della cucina italiana',2022),
+('9788891000015','Cucina contadina e legumi',2020),
+('9788891000008','Cucina del Centro Italia',2019),
+('9788891000014','Dolci delle feste',2021),
+('9788891000006','Dolci tradizionali italiani',2025),
+('9788891000013','Forno, focacce e torte salate',2022),
+('9788891000003','Paste, risi e minestre regionali',2023),
+('9788891000011','Pesce e cucina di mare',2024),
+('9788891000012','Piatti di pasta scelti',2023),
+('9788891000010','Ricette di Sicilia e Sardegna',2017),
+('9788891000001','Ricette regionali d’Italia - Volume completo',2026),
+('9788891000007','Sapori del Nord',2020),
+('9788891000009','Tavola del Sud',2018),
+('9788891000005','Verdure e contorni delle regioni',2021);

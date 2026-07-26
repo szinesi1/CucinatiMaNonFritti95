@@ -1,4 +1,4 @@
-"""Carica nel database locale i dump SQL del primo progetto."""
+"""Carica nel database locale i dati SQL forniti con il progetto."""
 
 from pathlib import Path
 
@@ -9,7 +9,7 @@ from cucina.models import Book, Ingredient, Publication, Recipe, Region, Regiona
 
 
 def parse_insert_values(path: Path) -> list[list[object]]:
-    """Parse the VALUES tuples used by the original SQL dump."""
+    """Legge le tuple VALUES presenti nei file SQL."""
     text = path.read_text(encoding="utf-8")
     marker = text.upper().find("VALUES")
     if marker < 0:
@@ -78,7 +78,7 @@ def parse_insert_values(path: Path) -> list[list[object]]:
 
 
 class Command(BaseCommand):
-    help = "Carica nel database Django i dati SQL del progetto PHP originale."
+    help = "Carica nel database Django i dati iniziali del ricettario."
 
     def add_arguments(self, parser):
         parser.add_argument(

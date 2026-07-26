@@ -4,26 +4,44 @@
 
 {% block content %}
 <a href="{{ back_url }}" class="btn-back">
-    ← Torna indietro
+    ← Torna alla pagina precedente
 </a>
 
 <h2>{{ region.name }}</h2>
 
+<div class="detail-summary">
+    <p><strong>Zona geografica:</strong> {{ region.zone }}</p>
+    <p><strong>Ricette associate:</strong> {{ recipe_count }}</p>
+</div>
+
 <h3>Ricette della regione</h3>
 
-<ul>
-{% for link in links %}
-    <li>
-        <a href="{% url 'recipe_detail' link.recipe.number %}?from=regione&amp;cod={{ region.code }}">
-            {{ link.recipe.title }}
-        </a>
-    </li>
-{% empty %}
-    <li><em>Ricetta non trovata</em></li>
-{% endfor %}
-</ul>
+<div class="table-responsive">
+<table class="table-ricette-collegate">
+    <thead>
+        <tr>
+            <th>N.</th>
+            <th>Ricetta</th>
+            <th>Tipologia</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for link in links %}
+        <tr>
+            <td>{{ link.recipe.number }}</td>
+            <td>{{ link.recipe.title }}</td>
+            <td>{{ link.recipe.get_recipe_type_display }}</td>
+        </tr>
+    {% empty %}
+        <tr>
+            <td colspan="4"><em>Nessuna ricetta associata.</em></td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+</div>
 
 <a href="{% url 'region_list' %}" class="btn-category">
-    ← Torna alle regioni
+    ← Torna all'elenco delle regioni
 </a>
 {% endblock %}

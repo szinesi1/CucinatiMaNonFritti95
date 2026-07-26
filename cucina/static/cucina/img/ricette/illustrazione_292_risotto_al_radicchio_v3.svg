@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="520" viewBox="0 0 800 520" role="img" aria-labelledby="title desc">
+<title id="title">Risotto al radicchio</title><desc id="desc">Illustrazione del piatto Risotto al radicchio, ricetta tipica di Veneto</desc>
+<rect width="800" height="520" fill="#f3f8f1"/><rect x="36" y="32" width="728" height="456" rx="32" fill="#ffffff" stroke="#188447" stroke-width="7"/>
+<ellipse cx="400" cy="220" rx="170" ry="72" fill="#f6f0dc" stroke="#72563b" stroke-width="9"/><ellipse cx="400" cy="205" rx="140" ry="55" fill="#e5c55a"/><g fill="#fff6c5"><circle cx="350" cy="190" r="10"/><circle cx="390" cy="220" r="10"/><circle cx="445" cy="190" r="10"/><circle cx="470" cy="225" r="10"/></g><text x="400" y="420" text-anchor="middle" font-family="Arial, sans-serif" font-size="34" font-weight="700" fill="#153923">Risotto al radicchio</text><text x="400" y="475" text-anchor="middle" font-family="Arial, sans-serif" font-size="21" fill="#3a674a">Veneto - Primo</text>
+</svg>

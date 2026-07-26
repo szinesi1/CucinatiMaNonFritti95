@@ -1,17 +1,19 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block content %}
-<h2 class="page-title">Benvenuta in Cucinati Ma Non Fritti 95</h2>
-
-<p class="page-description">
-    Progetto universitario dedicato alla cucina italiana regionale.
-    Esplora ricette, ingredienti, regioni, libri e pagine collegate.
-</p>
+<section class="home-intro">
+    <div>
+        <h2 class="page-title">Benvenuta in Cucinati Ma Non Fritti 95</h2>
+        <p class="page-description">Un archivio dedicato alla cucina italiana regionale. Consulta i libri, scopri le ricette e naviga tra ingredienti e territori.</p>
+    </div>
+    <img src="{% static 'cucina/img/ricette/Lasagne_alla_bolognese.jpg' %}" alt="Lasagne alla bolognese">
+</section>
 
 <div class="home-buttons">
-    <a class="btn-home" href="{% url 'recipe_list' %}">🍝 Ricette</a>
-    <a class="btn-home" href="{% url 'ingredient_list' %}">🥕 Ingredienti</a>
-    <a class="btn-home" href="{% url 'region_list' %}">🗺️ Regioni</a>
-    <a class="btn-home" href="{% url 'book_list' %}">📚 Libri</a>
+    <a class="btn-home" href="{% url 'book_list' %}"><img src="{% static 'cucina/img/ricette/Tortellini_in_brodo.jpg' %}" alt=""><span>Libri</span><small>Volumi, pagine e ricette pubblicate</small></a>
+    <a class="btn-home" href="{% url 'recipe_list' %}"><img src="{% static 'cucina/img/ricette/Pizza_napoletana.jpg' %}" alt=""><span>Ricette</span><small>Piatti regionali divisi per tipologia</small></a>
+    <a class="btn-home" href="{% url 'ingredient_list' %}"><img src="{% static 'cucina/img/ricette/Panzanella.jpg' %}" alt=""><span>Ingredienti</span><small>Ingredienti e ricette in cui sono usati</small></a>
+    <a class="btn-home" href="{% url 'region_list' %}"><img src="{% static 'cucina/img/ricette/Risotto_alla_milanese.jpg' %}" alt=""><span>Regioni</span><small>Tradizioni gastronomiche del territorio</small></a>
 </div>
 {% endblock %}

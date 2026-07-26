@@ -1,90 +1,47 @@
 :root {
-    /*************** COLORI ******************/
-
-    /* Palette principale */
-    --spring-green: #017632;
-    --yellow-green: #ABE145;
-    --sky-blue: #07C1F2;
-    --sky-blue-dark: #0596C7;
-    --cosmic-latte: #FFF4E0;
-
-    --orange: #F67A22;
-    --orange-dark: #D97706;
-
-    --yellow: #FFE63A;
-    --yellow-soft: #FBE248;
-
-    --brown: #351903;
-    --brown-light: #5B3A1A;
-
-    --white: #FFFFFF;
-    --off-white: #FFFDF5;
-
-    --grey-light: #E8E8E8;
-    --grey-shadow: rgba(53, 25, 3, 0.15);
-
-    /*************** TEMA ********************/
-
-    /* Sfondo */
-    --colore-bg: #EDE383;
+    --spring-green: #169447;
+    --yellow-green: #dff3e5;
+    --sky-blue: #218c4b;
+    --sky-blue-dark: #0f7137;
+    --cosmic-latte: #f4faf6;
+    --orange: #4f7d60;
+    --orange-dark: #365a43;
+    --yellow: #ccebd6;
+    --yellow-soft: #edf8f1;
+    --brown: #17271d;
+    --brown-light: #4d6254;
+    --white: #ffffff;
+    --off-white: #fbfdfb;
+    --grey-light: #d5e5da;
+    --grey-shadow: rgba(22, 73, 40, .14);
+    --colore-bg: #eaf5ed;
     --colore-content-bg: var(--off-white);
-
-    /* Testo */
     --colore-testo: var(--brown);
-
-    /*************** HEADER ******************/
-
-    --colore-header-bg: var(--spring-green);
-    --colore-header-text: var(--cosmic-latte);
-
-    /*************** SIDEBAR *****************/
-
-    --colore-sidebar-bg: var(--yellow-green);
-    --colore-sidebar-text: var(--brown);
-
-    --colore-sidebar-hover: var(--yellow-soft);
-    --colore-sidebar-active-border: var(--orange);
-
-    /*************** ACCENT ******************/
-
-    --colore-accent-blu: var(--sky-blue);
-    --colore-accent-arancio: var(--orange);
-    --colore-accent-yellow: var(--yellow);
-    --colore-accent-soft: var(--yellow-soft);
-
-    /*************** CARD ********************/
-
+    --colore-header-bg: #0d6b32;
+    --colore-header-text: var(--white);
+    --colore-sidebar-bg: #dff1e4;
+    --colore-sidebar-text: #17271d;
+    --colore-sidebar-hover: #c8e7d2;
+    --colore-sidebar-active-border: #16a34a;
+    --colore-accent-blu: var(--spring-green);
+    --colore-accent-arancio: #4f7d60;
+    --colore-accent-yellow: #ccebd6;
+    --colore-accent-soft: #edf8f1;
     --colore-card-bg: var(--white);
     --colore-card-shadow: var(--grey-shadow);
-
-    /*************** BOTTONI *****************/
-
-    /* Pulsanti generici */
-    --colore-btn-bg: var(--sky-blue);
-    --colore-btn-hover: var(--sky-blue-dark);
-    --colore-btn-text: var(--brown);
-    --colore-btn-shadow: rgba(7,193,242,.25);
-
-    /* Pulsanti CRUD */
-    --btn-add: var(--spring-green);
-    --btn-add-light: #6EDB91;
-
-    --btn-edit: var(--sky-blue);
-    --btn-edit-light: #8EDCF7;
-
-    --btn-delete: var(--orange);
-    --btn-delete-dark: var(--orange-dark);
-
-    --btn-save: var(--spring-green);
-
-    /*************** FOOTER ******************/
-
-    --colore-footer-bg: var(--spring-green);
-    --colore-footer-border: var(--yellow-green);
-
-    /*************** CAROUSEL ****************/
-
-    --colore-carousel-btn-bg: rgba(246,122,34,.5);
-    --colore-carousel-btn-hover: rgba(7,193,242,.7);
-
+    --colore-btn-bg: #168f45;
+    --colore-btn-hover: #0d6b32;
+    --colore-btn-text: var(--white);
+    --colore-btn-shadow: rgba(22, 143, 69, .24);
+    --btn-add: #168f45;
+    --btn-add-light: #dff3e5;
+    --btn-edit: #218c4b;
+    --btn-edit-light: #e3f5e9;
+    --btn-delete: #7a3333;
+    --btn-delete-dark: #5d2525;
+    --btn-save: #168f45;
+    --colore-footer-bg: #0d6b32;
+    --colore-footer-border: #62b77d;
+    --colore-carousel-btn-bg: rgba(13, 107, 50, .65);
+    --colore-carousel-btn-hover: rgba(13, 107, 50, .9);
 }
