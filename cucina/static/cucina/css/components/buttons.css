@@ -241,7 +241,7 @@
 }
 
 .reset-button {
-    background: transparent !important;
+    background: transparent;
     border: 1px solid var(--spring-green);
     color: var(--spring-green);
 }
