@@ -241,13 +241,12 @@
 }
 
 .reset-button {
-    background: transparent;
     border: 1px solid var(--spring-green);
     color: var(--spring-green);
 }
 
 .reset-button:hover {
-    background: var(--yellow-soft) !important;
+    background: var(--yellow-soft);
     color: var(--sky-blue-dark);
 }
 
