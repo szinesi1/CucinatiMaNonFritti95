@@ -84,3 +84,9 @@ main a:not(.btn):not(.card-button):not(.btn-back):not(.btn-category):not(.second
     color: var(--sky-blue-dark);
     text-decoration-thickness: 2px;
 }
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}

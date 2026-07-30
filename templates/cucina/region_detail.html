@@ -29,7 +29,7 @@
     {% for link in links %}
         <tr>
             <td>{{ link.recipe.number }}</td>
-            <td>{{ link.recipe.title }}</td>
+            <td><a class="entity-link" href="{% url 'recipe_detail' link.recipe.number %}">{{ link.recipe.title }} →</a></td>
             <td>{{ link.recipe.get_recipe_type_display }}</td>
         </tr>
     {% empty %}

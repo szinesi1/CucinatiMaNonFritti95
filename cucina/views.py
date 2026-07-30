@@ -1,6 +1,7 @@
 """View dell'applicazione: ricerca, filtri e operazioni CRUD sugli ingredienti."""
 
 from collections import OrderedDict
+from urllib.parse import urlsplit
 
 from django.db import transaction
 from django.core.paginator import Paginator
@@ -35,9 +36,16 @@ def _safe_url(request: HttpRequest, candidate: str, fallback: str) -> str:
         return candidate
     return fallback
 
-def _safe_referer(request: HttpRequest, fallback: str) -> str:
-    """Usa il referer solo come compatibilità con i vecchi collegamenti."""
-    return _safe_url(request, request.META.get("HTTP_REFERER", ""), fallback)
+def _detail_back_url(request: HttpRequest, fallback: str) -> str:
+    """Conserva la reale pagina interna di provenienza anche dopo un aggiornamento."""
+    session_key = f"detail_back_url:{request.path}"
+    referer = _safe_url(request, request.META.get("HTTP_REFERER", ""), "")
+
+    if referer and urlsplit(referer).path != request.path:
+        request.session[session_key] = referer
+        return referer
+
+    return _safe_url(request, request.session.get(session_key, ""), fallback)
 
 def _non_negative_int(value: str) -> int | None:
     """Converte un valore numerico del filtro; i valori vuoti o errati vengono ignorati."""
@@ -184,7 +192,7 @@ def recipe_list(request: HttpRequest) -> HttpResponse:
 def recipe_detail(request: HttpRequest, number: int) -> HttpResponse:
     recipe = get_object_or_404(Recipe, number=number)
 
-    back_url = reverse("recipe_list")
+    back_url = _detail_back_url(request, reverse("recipe_list"))
 
     region_link = (
         RegionalRecipe.objects.select_related("region")
@@ -311,7 +319,7 @@ def ingredient_detail(request: HttpRequest, name: str) -> HttpResponse:
             status=404,
         )
 
-    back_url = reverse("ingredient_list")
+    back_url = _detail_back_url(request, reverse("ingredient_list"))
 
     return render(
         request,
@@ -401,10 +409,10 @@ def ingredient_delete(request: HttpRequest) -> HttpResponse:
     if request.method != "POST":
         return redirect("recipe_list")
 
-    ingredient_id = request.POST.get("idIngrediente")
-    recipe_number = request.POST.get("numero")
+    ingredient_id = _non_negative_int(request.POST.get("idIngrediente", ""))
+    recipe_number = _non_negative_int(request.POST.get("numero", ""))
     if not ingredient_id or not recipe_number:
-        return HttpResponseBadRequest("Dati mancanti.")
+        return HttpResponseBadRequest("Dati mancanti o non validi.")
 
     Ingredient.objects.filter(id=ingredient_id, recipe_id=recipe_number).delete()
     return redirect("recipe_detail", number=recipe_number)
@@ -499,7 +507,7 @@ def region_detail(request: HttpRequest, code: str) -> HttpResponse:
         .filter(region=region)
         .order_by("recipe__title")
     )
-    back_url = reverse("region_list")
+    back_url = _detail_back_url(request, reverse("region_list"))
 
     return render(
         request,
@@ -520,7 +528,8 @@ def book_list(request: HttpRequest) -> HttpResponse:
     data = _session_filters(request, "book_filters", {"titolo": "", "ricetta": "", "anno": "", "isbn": "", "pagine_min": "", "pagine_max": "", "ricette_min": "", "ricette_max": "", "ordina": "titolo", "direzione": "asc"})
     title = data["titolo"]
     recipe = data["ricetta"]
-    year = data["anno"]
+    year_raw = data["anno"]
+    year = _non_negative_int(year_raw)
     isbn = data["isbn"]
     min_pages_raw = data["pagine_min"]
     max_pages_raw = data["pagine_max"]
@@ -552,7 +561,7 @@ def book_list(request: HttpRequest) -> HttpResponse:
         books = books.filter(title__icontains=title)
     if recipe:
         books = books.filter(publications__recipe__title__icontains=recipe)
-    if year:
+    if year is not None:
         books = books.filter(year=year)
     if isbn:
         books = books.filter(isbn__icontains=isbn)
@@ -580,7 +589,7 @@ def book_list(request: HttpRequest) -> HttpResponse:
         active_filters.append(f'Titolo: "{title}"')
     if recipe:
         active_filters.append(f'Ricetta: "{recipe}"')
-    if year:
+    if year is not None:
         active_filters.append(f"Anno: {year}")
     if isbn:
         active_filters.append(f"ISBN: {isbn}")
@@ -600,7 +609,7 @@ def book_list(request: HttpRequest) -> HttpResponse:
             "active_section": "libri",
             "title_filter": title,
             "recipe_filter": recipe,
-            "year_filter": year,
+            "year_filter": year_raw,
             "isbn_filter": isbn,
             "min_pages": min_pages_raw,
             "max_pages": max_pages_raw,
@@ -628,7 +637,7 @@ def book_detail(request: HttpRequest, isbn: str) -> HttpResponse:
     page_number = request.POST.get("page", 1) if request.POST.get("form_action") == "paginate" else 1
     page_obj = Paginator(publications, 30).get_page(page_number)
 
-    back_url = reverse("book_list")
+    back_url = _detail_back_url(request, reverse("book_list"))
 
     return render(
         request,

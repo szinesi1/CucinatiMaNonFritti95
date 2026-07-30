@@ -52,3 +52,8 @@
 .table-ricette-collegate tr:hover {
     background: var(--cosmic-latte);
 }
+
+.table-ricette-collegate .entity-link {
+    display: inline-block;
+    max-width: 100%;
+}

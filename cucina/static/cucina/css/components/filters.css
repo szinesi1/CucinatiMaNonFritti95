@@ -17,39 +17,46 @@
     flex-wrap: wrap;
 }
 
+.filters .filters-input,
+.filters .filters-input2,
+.filters-select {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    height: 50px;
+    min-height: 50px;
+    padding: 0 16px;
+    border: 2px solid var(--sky-blue);
+    border-radius: 10px;
+    background: var(--white);
+    color: var(--brown);
+    font-size: 1rem;
+    line-height: 1.2;
+    box-sizing: border-box;
+    transition: border-color .2s ease, box-shadow .2s ease;
+}
+
 .filters .filters-input {
-    flex: 1;
-    min-width: 220px;
-    height: 46px;
-    padding: 0 16px;
-    border: 2px solid var(--sky-blue);
-    border-radius: 10px;
-    background: var(--white);
-    color: var(--brown);
-    font-size: 1rem;
-    transition: all .2s ease;
+    flex: 1 1 260px;
 }
 
-.filters .filters-input:focus {
-    outline: none;
-    border-color: var(--spring-green);
-    box-shadow: 0 0 8px var(--colore-btn-shadow);
+.filters-select {
+    padding-right: 42px;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: linear-gradient(45deg, transparent 50%, var(--brown) 50%), linear-gradient(135deg, var(--brown) 50%, transparent 50%);
+    background-position: calc(100% - 18px) calc(50% - 3px), calc(100% - 12px) calc(50% - 3px);
+    background-size: 6px 6px, 6px 6px;
+    background-repeat: no-repeat;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-.filters .filters-input2{
-    flex: 1;
-    min-width: 220px;
-    height: 46px;
-    padding: 0 16px;
-    border: 2px solid var(--sky-blue);
-    border-radius: 10px;
-    background: var(--white);
-    color: var(--brown);
-    font-size: 1rem;
-    transition: all .2s ease;
-}
-
-.filters .filters-input2:focus{
+.filters .filters-input:focus,
+.filters .filters-input2:focus,
+.filters-select:focus {
     outline: none;
     border-color: var(--spring-green);
     box-shadow: 0 0 8px var(--colore-btn-shadow);
@@ -57,33 +64,41 @@
 
 .advanced-filters {
     display: none;
+    width: 100%;
+    max-width: 100%;
 }
 
 .advanced-filters.open {
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr;
     gap: 1rem;
 }
 
-.advanced-filters,
-.advanced-filters.open {
-    width: 100%;
-    max-width: 100%;
-    box-sizing: border-box;
-}
-
 .filters fieldset {
+    width: 100%;
+    min-width: 0;
+    height: 100%;
+    margin: 0;
+    padding: .9rem;
     border: 2px solid var(--yellow-soft);
     border-radius: 12px;
-    padding: .75rem;
-    min-width: 0;
-    width: 100%;
-    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: .75rem;
+    overflow: hidden;
 }
 
 .filters legend {
+    float: none;
+    width: auto;
+    margin: 0;
     padding: 0 8px;
+    min-height: 2.4rem;
+    display: flex;
+    align-items: flex-end;
     color: var(--spring-green);
-    font-weight: bold;
+    font-size: 1.25rem;
+    font-weight: 700;
 }
 
 .filter-group {
@@ -95,14 +110,16 @@
 .filter-group label {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
+    min-height: 42px;
+    margin: 0;
     padding: 6px 10px;
     border-radius: 999px;
     background: var(--yellow-soft);
     color: var(--brown);
     cursor: pointer;
     font-size: .9rem;
-    transition: all .2s ease;
+    transition: background-color .2s ease;
     user-select: none;
 }
 
@@ -110,24 +127,28 @@
     background: var(--yellow);
 }
 
-.filter-group input[type="checkbox"] {
-    accent-color: var(--sky-blue);
+/* Tutte le caselle dei filtri avanzati usano la stessa dimensione. */
+.advanced-filters input[type="checkbox"] {
+    width: 22px;
+    height: 22px;
+    min-width: 22px;
+    flex: 0 0 22px;
+    margin: 0;
+    accent-color: var(--spring-green);
     cursor: pointer;
 }
 
-.tipologie-group {
+.tipologie-group,
+.origine-group,
+.zone-group {
     display: flex;
-    gap: 6px;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-content: flex-start;
 }
 
 .regioni-group {
     display: grid;
-
-    gap: 6px;
-}
-
-.origine-group {
-    display: flex;
     gap: 6px;
 }
 
@@ -135,6 +156,73 @@
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
     gap: 6px;
+}
+
+.filter-range,
+.filter-sort,
+.ingredient-filter-row,
+.book-filters-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    width: 100%;
+    min-width: 0;
+    align-items: end;
+}
+
+.ingredient-filter-row {
+    margin-top: 1rem;
+}
+
+.filter-range label,
+.filter-sort label,
+.book-filters-grid label {
+    display: grid;
+    grid-template-rows: auto minmax(50px, auto);
+    gap: 8px;
+    width: 100%;
+    min-width: 0;
+    margin: 0;
+    align-content: start;
+    color: var(--brown);
+    font-weight: 600;
+}
+
+.advanced-filters input,
+.advanced-filters select,
+.advanced-filters button,
+.advanced-filters label,
+.book-filters-grid input,
+.book-filters-grid select {
+    min-width: 0;
+    max-width: 100%;
+}
+
+.advanced-filters > fieldset > :not(legend),
+.ingredient-filter-row > fieldset > :not(legend) {
+    width: 100%;
+    min-width: 0;
+}
+
+.filter-range > label > input,
+.filter-sort > label > input,
+.filter-sort > label > select,
+.book-filters-grid > label > input,
+.book-filters-grid > label > select,
+.advanced-filters > fieldset > select {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+}
+
+.zone-group .check-ui,
+.tipologie-group label,
+.origine-group label {
+    min-height: 50px;
+}
+
+.region-filters .zone-group .check-ui {
+    min-width: 140px;
 }
 
 .filters-actions {
@@ -146,13 +234,13 @@
 
 .filters-actions button,
 .filters-actions .btn {
+    border: none;
+    border-radius: 10px;
+    padding: .55rem 1rem;
     background: var(--sky-blue);
     color: white;
-    border: none;
-    padding: 0.55rem 1rem;
-    border-radius: 10px;
     cursor: pointer;
-    transition: 0.2s ease;
+    transition: background-color .2s ease;
 }
 
 .filters-actions button:hover,
@@ -163,12 +251,12 @@
 .filters-actions a {
     display: inline-flex;
     align-items: center;
-    padding: 0.55rem 1rem;
+    padding: .55rem 1rem;
     border-radius: 10px;
-    text-decoration: none;
     background: #e9ecef;
     color: #333;
-    transition: 0.2s ease;
+    text-decoration: none;
+    transition: background-color .2s ease;
 }
 
 .filters-actions a:hover {
@@ -182,89 +270,6 @@
 .alphabet-filter.open {
     display: block;
     width: 100%;
-    box-sizing: border-box;
-}
-
-.alphabet-filter fieldset {
-    width: 100%;
-}
-
-@media (min-width: 900px) {
-
-    .filters {
-        max-width: 1200px;
-        margin-left: auto;
-        margin-right: auto;
-    }
-
-    .advanced-filters.open {
-        display: grid;
-        grid-template-columns: 180px 1fr;
-        gap: 1.5rem;
-        align-items: start;
-    }
-}
-
-.filters-select {
-    width: 100%;
-    min-width: 180px;
-    height: 46px;
-    padding: 0 38px 0 14px;
-    border: 2px solid var(--sky-blue);
-    border-radius: 10px;
-    background: var(--white);
-    color: var(--brown);
-    font-size: 1rem;
-}
-
-.filters-select:focus {
-    outline: none;
-    border-color: var(--spring-green);
-    box-shadow: 0 0 8px var(--colore-btn-shadow);
-}
-
-.filter-range,
-.filter-sort {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 12px;
-}
-
-.filter-range label,
-.filter-sort label,
-.book-filters-grid label {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-    min-width: 0;
-    color: var(--brown);
-    font-weight: 600;
-}
-
-.filter-range .filters-input2,
-.filter-sort .filters-input2,
-.book-filters-grid .filters-input2 {
-    width: 100%;
-    min-width: 0;
-}
-
-.region-filters.open {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 1rem;
-}
-
-.ingredient-filter-row {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 1rem;
-    margin-top: 1rem;
-}
-
-.book-filters-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 12px;
 }
 
 .active-filters-summary {
@@ -310,37 +315,10 @@
     background: var(--white);
 }
 
-@media (min-width: 900px) {
-    .region-filters.open {
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        align-items: start;
-    }
-
-    .ingredient-filter-row {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    .book-filters-grid {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
+.pagination form {
+    margin: 0;
 }
 
-@media (max-width: 620px) {
-    .filter-range,
-    .filter-sort,
-    .book-filters-grid {
-        grid-template-columns: 1fr;
-    }
-}
-
-.filters input,
-.filters select,
-.filters button { max-width: 100%; }
-.book-filters-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-.recipe-filters.open { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-.recipe-filters fieldset { overflow: hidden; }
-.pagination form { margin: 0; }
 .pagination-link {
     border: 0;
     padding: 5px 0;
@@ -352,13 +330,55 @@
     text-underline-offset: 3px;
     cursor: pointer;
 }
-.pagination-link:hover { color: var(--sky-blue-dark); }
-@media (max-width: 1050px) {
-    .book-filters-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+.pagination-link:hover {
+    color: var(--sky-blue-dark);
 }
-@media (max-width: 760px) {
-    .book-filters-grid,
-    .recipe-filters.open,
+
+@media (min-width: 621px) {
     .filter-range,
-    .filter-sort { grid-template-columns: 1fr; }
+    .filter-sort,
+    .book-filters-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (min-width: 900px) {
+    .filters {
+        max-width: 1200px;
+        margin-right: auto;
+        margin-left: auto;
+    }
+
+    .recipe-filters.open {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .recipe-type-fieldset {
+        grid-column: 1 / -1;
+    }
+
+    .region-filters.open {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .ingredient-filter-row {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .book-filters-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (min-width: 900px) and (max-width: 1180px) {
+    .region-filters.open {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 760px) {
+    .recipe-filters.open {
+        grid-template-columns: 1fr;
+    }
 }

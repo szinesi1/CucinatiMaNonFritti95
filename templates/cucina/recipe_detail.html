@@ -3,7 +3,7 @@
 {% block title %}{{ recipe.title }} · Cucinati Ma Non Fritti 95{% endblock %}
 {% block content %}
 <div class="page-container recipe-detail">
-<a href="{% url 'recipe_list' %}" class="btn-back">← Torna alle ricette</a>
+<a href="{{ back_url }}" class="btn-back">← Torna alla pagina precedente</a>
 <section class="recipe-hero">
     <div class="recipe-hero-image">{% if recipe.image %}<img src="{% static 'cucina/img/ricette/' %}{{ recipe.image }}" alt="{{ recipe.title }}">{% endif %}</div>
     <div class="recipe-hero-info"><span class="recipe-type-badge">{{ recipe.get_recipe_type_display }}</span><h2 class="recipe-title">{{ recipe.title }}</h2><div class="detail-metrics"><div><strong>{{ ingredient_count }}</strong><span>ingredienti</span></div><div><strong>{{ publication_count }}</strong><span>pubblicazioni</span></div></div>

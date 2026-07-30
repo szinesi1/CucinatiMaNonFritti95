@@ -189,6 +189,47 @@ class PublicPagesTests(TestCase):
         self.assertEqual(response.context["back_url"], reverse("recipe_list"))
         self.assertNotContains(response, "?next=")
 
+    def test_region_recipes_are_clickable(self):
+        response = self.client.get(reverse("region_detail", args=[self.region.code]))
+        self.assertContains(
+            response,
+            reverse("recipe_detail", args=[self.recipe.number]),
+        )
+        self.assertContains(response, "Ricetta prova")
+
+    def test_detail_back_link_uses_internal_referer(self):
+        recipe_url = reverse("recipe_detail", args=[self.recipe.number])
+        region_url = reverse("region_detail", args=[self.region.code])
+        response = self.client.get(region_url, HTTP_REFERER=f"http://testserver{recipe_url}")
+        self.assertContains(response, f'href="{recipe_url}"')
+
+
+    def test_detail_back_link_survives_page_refresh(self):
+        recipe_url = reverse("recipe_detail", args=[self.recipe.number])
+        region_url = reverse("region_detail", args=[self.region.code])
+
+        first_response = self.client.get(
+            region_url,
+            HTTP_REFERER=f"http://testserver{recipe_url}",
+        )
+        self.assertContains(first_response, f'href="{recipe_url}"')
+
+        refreshed_response = self.client.get(
+            region_url,
+            HTTP_REFERER=f"http://testserver{region_url}",
+        )
+        self.assertContains(refreshed_response, f'href="{recipe_url}"')
+
+    def test_invalid_book_year_is_ignored(self):
+        response = self.client.post(reverse("book_list"), {"anno": "non-numerico"})
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.book.title)
+
+    def test_detail_back_link_rejects_external_referer(self):
+        region_url = reverse("region_detail", args=[self.region.code])
+        response = self.client.get(region_url, HTTP_REFERER="https://example.com/phishing")
+        self.assertContains(response, f'href="{reverse("region_list")}"')
+
     def test_create_edit_delete_ingredient(self):
         create_url = reverse("ingredient_create", args=[self.recipe.number])
         response = self.client.post(
