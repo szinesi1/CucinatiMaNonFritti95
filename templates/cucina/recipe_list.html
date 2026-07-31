@@ -33,7 +33,7 @@
 {% for recipe in recipes %}
 <article class="card recipe-card">
     {% if recipe.image %}<img src="{% static 'cucina/img/ricette/' %}{{ recipe.image }}" alt="{{ recipe.title }}">{% endif %}
-    <div class="card-body"><div class="recipe-card-content"><span class="recipe-type-badge">{{ recipe.get_recipe_type_display }}</span><h3 class="card-title">{{ recipe.title }}</h3><p class="card-info">{% if recipe.region_name %}Regione: {{ recipe.region_name }}{% else %}Regione non associata{% endif %}</p><p class="card-info">{% if recipe.is_published %}Pubblicata in almeno un libro{% else %}Non pubblicata{% endif %}</p></div><a href="{% url 'recipe_detail' recipe.number %}" class="card-button">Vedi ricetta</a></div>
+    <div class="card-body"><div class="recipe-card-content"><span class="recipe-type-badge">{{ recipe.get_recipe_type_display }}</span><h3 class="card-title">{{ recipe.title }}</h3><p class="card-info">{% if recipe.region_name %}Regione: {{ recipe.region_name }}{% else %}Regione non associata{% endif %}</p></div><a href="{% url 'recipe_detail' recipe.number %}" class="card-button">Vedi ricetta</a></div>
 </article>
 {% empty %}<p class="empty-results">Nessuna ricetta corrisponde ai criteri selezionati.</p>{% endfor %}
 </div>
