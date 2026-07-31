@@ -28,10 +28,10 @@
 <ul class="publication-list">
 {% for publication in publications %}
     <li>
-        <span>Pagina {{ publication.page_number }}</span>
         <a href="{% url 'recipe_detail' publication.recipe.number %}">
             {{ publication.recipe.title }}
         </a>
+        <span>Pagina {{ publication.page_number }}</span>
     </li>
 {% empty %}
     <li><em>Nessuna ricetta associata.</em></li>
