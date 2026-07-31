@@ -1,0 +1,123 @@
+/*****************************************/
+/************** DETTAGLIO ****************/
+/*****************************************/
+
+/* Titolo */
+
+.detail-title {
+    margin-bottom: 1rem;
+    color: var(--colore-header-bg);
+}
+
+/* Informazioni */
+
+.detail-info {
+    margin: .5rem 0;
+    line-height: 1.6;
+}
+
+/* Sezioni */
+
+.detail-section {
+    margin-top: 2rem;
+}
+
+/*************/
+/* Carosello */
+/*************/
+
+.carousel {
+    position: relative;
+    width: 600px;
+    max-width: 100%;
+    margin: 20px auto;
+    overflow: hidden;
+    border-radius: 10px;
+}
+
+.carousel-inner {
+    display: flex;
+    transition: transform .5s ease;
+}
+
+.carousel-item {
+    min-width: 100%;
+}
+
+.carousel-item img {
+    width: 100%;
+    height: 350px;
+    object-fit: cover;
+}
+
+/*****************************************/
+/******** TABELLA INGREDIENTI ************/
+/*****************************************/
+
+.table-ingredients {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 10px;
+}
+
+.table-ingredients td {
+    background: var(--white);
+    border: 1px solid var(--grey-light);
+    padding: 14px 18px;
+    vertical-align: middle;
+    transition: all .2s ease;
+}
+
+.table-ingredients tr td:first-child {
+    border-radius: 12px 0 0 12px;
+}
+
+.table-ingredients tr td:last-child {
+    border-radius: 0 12px 12px 0;
+}
+
+.table-ingredients tr:hover td {
+    background: var(--white);
+    box-shadow: 0 2px 8px var(--grey-shadow);
+}
+
+/*****************************************/
+/************* COLONNE *******************/
+/*****************************************/
+
+.ingredient-qty {
+    width: 140px;
+    font-weight: 700;
+    color: var(--spring-green);
+}
+
+.ingredient-name a {
+    text-decoration: none;
+    color: var(--brown);
+    font-weight: 600;
+    transition: color .2s ease;
+}
+
+.ingredient-name a:hover {
+    color: var(--sky-blue);
+}
+
+.ingredient-actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 10px;
+    white-space: nowrap;
+}
+
+/*****************************************/
+/**************** LINK *******************/
+/*****************************************/
+
+.recipe-detail a {
+    text-decoration: none;
+}
+
+.recipe-detail a:hover {
+    text-decoration: none;
+}

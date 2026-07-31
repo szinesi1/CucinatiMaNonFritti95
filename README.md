@@ -8,12 +8,13 @@ L’applicazione permette di consultare, ricercare e gestire ricette, ingredient
 `struttura teorica, non definitiva`
 
 ```
+/database/     → database con schema e singole tabelle
 /css/          → fogli di stile (palette verde)
 /js/           → script JavaScript
-/php/          → connessione al DB e funzioni comuni
-/ricerca/      → pagine di ricerca (Ricette, Regioni, Libri, Pagine, Ingredienti)
-/crud/         → CRUD completo per la tabella Ingrediente
-/img/          → immagini (se presenti)
+/includes/     → connessione al db
+/interface/    → funzioni comuni (header, navbar e footer)
+/pages/        → pagine di ricerca (Ricette, Regioni, Libri, Pagine, Ingredienti)
+/img/          → immagini
 index.php      → homepage con template Interfaccia 3
 ```
 ---
@@ -28,16 +29,19 @@ Il database è composto dalle seguenti tabelle:
 - **Ingrediente** *(tabella con CRUD)*
 - **Libro**
 - **Pagina**
-- **RicettaPubblicata**
 
-Lo schema è definito nel file `schema.sql` (non incluso nel repository se ignorato tramite `.gitignore`).
+Lo schema è definito nel file `schema.sql` presente nella cartella dataset.
 
+### Modifiche rispetto allo schema iniziale:
+Sono stati aggiunti dati come:
+- Zona dell'Italia associata alle Regioni;
+- Immagini associate a Ricette.
 ---
 
 ## 🔍 Funzionalità principali
 
 ### ✔ Ricerca
-Per ogni entità (Ricetta, Regione, Libro, Pagina, Ingrediente) è disponibile una pagina di ricerca con:
+Per ogni entità (Ricetta, Regione, Libro, Ingrediente) è disponibile una pagina di ricerca con:
 
 - filtri multipli  
 - risultati tabellari  
@@ -70,28 +74,21 @@ La palette scelta è basata su tonalità di verde.
 
 ## 🛠️ Tecnologie utilizzate
 
-- **PHP 8+**  
-- **MySQL / MariaDB**  
-- **HTML5**  
-- **CSS3**  
-- **JavaScript**  
-- **GitHub** per versionamento  
+- **PHP 8+** per la logica server-side
+- **MySQL** come database
+- **HTML5** per la struttura delle pagine
+- **CSS3** per lo stile e il layout
+- **JavaScript** per interattivita' (es. popup per l'eliminazione di ingredienti dal )
+- **GitHub** per versionamento
 
 ---
 
-## ▶️ Installazione
+## ▶️ Avviamento sito
 
-1. Clonare il repository:
-```
-git clone https://github.com/tuo-username/nome-progetto.git
-```
-2. Importare il database tramite `schema.sql` e `dati.sql` (se fornito).  
-3. Configurare `php/connessione.php` con le proprie credenziali MySQL.  
-4. Avviare il server locale (XAMPP, WAMP, ecc.).  
-5. Aprire nel browser:
-```
-http://localhost/nome-progetto/
-```
+Aprire il link seguente nel browser:
+https://cucinatimanonfritti.site.je/index.php
+
+In caso di non apertura del link provare a disattivare il wifi e collegarsi con i dati mobili (al momento non abbiamo la certificazione funzionante su tutti i browser) oppure cambiare browser
 
 ---
 
